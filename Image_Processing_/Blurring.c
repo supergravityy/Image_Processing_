@@ -12,7 +12,7 @@ int blurring(BYTE* old_buffer, BYTE* new_buffer, BITMAPINFOHEADER* infoheader, i
 	{
 		printf("Memory allocation Error! \n");
 		*errcCode = 2;
-		goto alloc_err;
+		goto alloc_err;//gdgfs
 	}
 
 	/*----------------------------------*/
