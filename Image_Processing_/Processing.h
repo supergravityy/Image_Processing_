@@ -16,16 +16,19 @@ int inverting(BYTE*, BYTE*, BITMAPINFOHEADER*, int*);
 
 typedef struct
 {
-	BYTE value;
-	DWORD count;
-}HISTO;
+	double mean;
+	double variance;
+	double sum;
+	double pow_sum;
+}STASTICS;
 
-void hist_init(HISTO * hist);
-void organize_hist_contents(HISTO * hist);
-void write_hist(HISTO* hist);
-void normalized_CDF(HISTO* old_hist, HISTO* new_hist, int pxl_num, int sum);
 
 int histo_equalizing(BYTE*, BYTE*, BITMAPINFOHEADER*, int*);
+void init_ARR(BYTE*, BITMAPINFOHEADER*, BYTE*, STASTICS*);
+void normalize_CDF(BYTE*, BITMAPINFOHEADER*, BYTE*, STASTICS*);
+void write_hist(double*);
+inline void draw_bar(int);
+
 int histo_streching(BYTE*, BYTE*, BITMAPINFOHEADER*, int*);
 
 BYTE row_cal(BYTE* , double* ,int ,int ,int ,int );

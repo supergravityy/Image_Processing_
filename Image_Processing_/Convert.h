@@ -12,7 +12,7 @@
 #define QUIT 13
 
 #pragma pack(2) 
-// 윈도우가 bmp 헤더를 올바르게 읽어야 하기때문에, 구조체의 멤버를 기존의 4바이트가 아닌 2바이트로 맞춤
+// 윈도우가 bmp 헤더를 올바르게 읽어야 하기때문에, 구조체의 멤버를 기존의 8바이트가 아닌 2바이트로 맞춤
 
 typedef unsigned char BYTE;
 typedef unsigned short WORD;
