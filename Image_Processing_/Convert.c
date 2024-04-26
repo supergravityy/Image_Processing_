@@ -173,7 +173,7 @@ int mode_select(char* old_buffer, char* new_buffer, BITMAPINFOHEADER* infoheader
 		histo_equalizing(old_buffer, new_buffer, infoheader, errCode);
 		break;
 	case 9:
-		// ½ºÆ®·¹Äª
+		histo_streching(old_buffer, new_buffer, infoheader, errCode);
 		break;
 	case 10:
 		// ¿¥º¸½Ì

@@ -5,3 +5,8 @@ void duplicate(BYTE* old_buffer, BYTE* new_buffer, BITMAPINFOHEADER* infoheader,
 	memcpy(new_buffer, old_buffer, infoheader->ImageSize);
 	printf("Duplicating Image file has been completed! \n\n");
 }
+
+int bmp2txt()
+{
+	return 0;
+}

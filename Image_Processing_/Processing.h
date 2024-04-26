@@ -4,6 +4,7 @@
 #include "Convert.h"
 
 #define swap(type,x,y) do { type t=(x); (x)=(y); (y)=t;} while(0)
+#define MAX_BRIT_VAL 255
 
 int mem_overrun_cnt;
 
@@ -24,17 +25,18 @@ typedef struct
 
 
 int histo_equalizing(BYTE*, BYTE*, BITMAPINFOHEADER*, int*);
-void init_ARR(BYTE*, BITMAPINFOHEADER*, BYTE*, STASTICS*);
-void normalize_CDF(BYTE*, BITMAPINFOHEADER*, BYTE*, STASTICS*);
-void write_hist(double*);
-inline void draw_bar(int);
-
 int histo_streching(BYTE*, BYTE*, BITMAPINFOHEADER*, int*);
+
 
 BYTE row_cal(BYTE* , double* ,int ,int ,int ,int );
 BYTE col_cal(BYTE* , double* ,int ,int ,int ,int );
 BYTE sharp_cal(BYTE* , double* ,int ,int ,int ,int );
 BYTE sorting(BYTE*, int, int, int, int);
+
+void init_ARR(BYTE*, BITMAPINFOHEADER*, double*, STASTICS*);
+void normalize_CDF(BYTE*, BITMAPINFOHEADER*, double*, STASTICS*);
+void write_hist(double*);
+void find_min_max(BYTE*, BITMAPINFOHEADER*, BYTE*);
 
 
 
@@ -68,6 +70,17 @@ inline void normalize_filter(double* kernal, int size, int coeff)
 			printf(" %f", *(kernal + i * size + j));
 
 	printf("\nsum = %f\n", sum);
+}
+
+inline void draw_bar(int Num)
+{
+	int quotient = Num / 10;
+	// 10 이하의 나머지는 무시해버린다
+
+	for (int num = 0; num < quotient; num++)
+		printf("▥");
+
+	printf("\n");
 }
 
 #endif

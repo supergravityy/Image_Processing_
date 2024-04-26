@@ -136,6 +136,7 @@
     <ClCompile Include="Median_filtering.c" />
     <ClCompile Include="Reuseful.c" />
     <ClCompile Include="Sharpening.c" />
+    <ClCompile Include="Stretching.c" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Processing.h" />
