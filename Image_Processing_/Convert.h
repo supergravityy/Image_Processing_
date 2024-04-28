@@ -57,7 +57,7 @@ int print_data(BYTE*, DWORD, DWORD);
 int mode_select(char*, char*, BITMAPINFOHEADER*, unsigned int, int*);
 
 int convert_TXT(char*, char*);
-void write_header(BITMAPFILEHEADER*, BITMAPINFOHEADER*, BYTE*, FILE*);
+void write_header(BITMAPFILEHEADER*, BITMAPINFOHEADER*, BITMAPColorPalette*, FILE*);
 void write_raw(BITMAPINFOHEADER*, BYTE*, FILE*, int*);
 
 #pragma pack(pop)
