@@ -2,7 +2,6 @@
 #include "Processing.h"
 
 
-
 int convert_BMP(char* oldName, char* newName, unsigned int mode)
 {
 	int errorcode = 0;
@@ -11,6 +10,7 @@ int convert_BMP(char* oldName, char* newName, unsigned int mode)
 * 2. 메모리 할당 불가능
 * 3. 메모리 산술 이슈
 * 4. 치명적인 메모리 이슈
+* 5. 0으로 나눌뻔
 */
 
 	/*---------------------------------------*/
@@ -68,6 +68,10 @@ int convert_BMP(char* oldName, char* newName, unsigned int mode)
 
 	fread(old_buffer, infoheader.ImageSize, 1, oldBMP);
 
+	/*---------------------------------------*/
+	/* 3. 프로세싱, 프로세싱중 오류 확인 */
+	/*---------------------------------------*/
+
 	int result = mode_select(old_buffer, new_buffer, &infoheader, mode, &errorcode);
 
 	if(result)
@@ -88,7 +92,7 @@ ignore:
 	fwrite(new_buffer, infoheader.ImageSize, 1, newBMP);
 
 	/*---------------------------------------*/
-	/* 3. 정리하기 */
+	/* 4. 정리하기 */
 	/*---------------------------------------*/
 
 clean_up:
@@ -184,6 +188,7 @@ int mode_select(char* old_buffer, char* new_buffer, BITMAPINFOHEADER* infoheader
 	case 12:
 		inverting(old_buffer, new_buffer, infoheader, errCode);
 		break;
+	//bmp2txt 함수는 여기서 쓰이지 않는다.
 	}
 
 	return *errCode;

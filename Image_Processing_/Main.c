@@ -27,6 +27,7 @@ int main()
 
 		// fgets는 개행 문자까지 입력 받으므로, 개행 문자를 NULL로 바꿔줌
 		size_t ln = strlen(originalName) - 1; // NULL 전의 개행을 NULL로~
+
 		if (originalName[ln] == '\n')
 			originalName[ln] = '\0';
 	} while (isBMP(originalName));
@@ -37,7 +38,7 @@ int main()
 	/*-------------------------------------------------*/
 	// 이미지 파일을 어떻게 변환할 것인가? 모드 입력받기
 	/*-------------------------------------------------*/
-	while (mode < 1 || mode > 12)
+	while (mode < 1 || mode > QUIT)
 	{
 		printf("1. blurring\n");
 		printf("2. sharpening\n");
@@ -51,21 +52,22 @@ int main()
 		printf("10. embossing\n");
 		printf("11. binarization\n");
 		printf("12. invert\n");
-		printf("13. Quit\n");
+		printf("13. bmp2txt\n");
+		printf("14. Quit\n");
 
 		printf("type the mode you want : ");
 		scanf("%u", &mode);
-		getchar(); // stdin 버퍼 소비하기
+		fflush(stdin); // 입력버퍼 소비
 	}
 
-	if (mode == 13)
+	if (mode == QUIT)
 	{
 		printf("existing.. \n");
 		goto termination;
 	}
 
 	/*-------------------------------------------------*/
-	// 모드에 따라서 처리결과 이미지 파일의 이름을 바꿔주기 + 본격적인 변환
+	// 모드에 따라서 처리결과 이미지 파일의 이름을 바꿔주기
 	/*-------------------------------------------------*/
 	if (addName(originalName, &neoName, mode))
 	{
@@ -76,11 +78,20 @@ int main()
 	/*printf("Name change progress has been completed! \n");*/
 	printf("%s\n", neoName);
 
-	int errcode = convert_BMP(originalName, neoName, mode);
+	/*-------------------------------------------------*/
+	// 모드에 따라서 본격적인 변환
+	/*-------------------------------------------------*/
 
-	if(errcode)
+	int result;
+
+	if (mode != 13) //txt 파일로 변환하는 과정은 기존 영상처리와 차이가 많이 나기에, 따로 선언
+		result = convert_BMP(originalName, neoName, mode);
+	else
+		result = convert_TXT(originalName, neoName, mode);
+
+	if(result)
 	{
-		printf("Fatal error occured! => %d \n\n", errcode);
+		printf("Fatal error occured! => %d \n\n", result);
 		goto termination;
 		/* 
 		1 : 파일 열기 불가능
@@ -88,6 +99,8 @@ int main()
 		3 : 메모리 오버런, 언더런 
 		4 : 치명적인 메모리 이슈
 		5 : 0으로 나눌뻔함
+		6 : 패딩이 필요 (bmp2txt 기능에서만)
+		7 : 윈도우 앱 실행오류
 		*/
 	}
 
@@ -184,6 +197,19 @@ int addName(char* oldName, char** newName, unsigned int mode)
 	case 12:
 		strcpy(additional_Name, "_inverted");
 		break;
+	case 13:
+		strcpy(additional_Name, "_4debug");
+		break;
+
+		/*
+		* 모드를 추가하고 싶을때 정석적인 단계
+		* 1. Convert.h의 QUIT을 원하는 만큼 +한다
+		* 2. 메인함수의 유효모드 출력단계에, 추가한다
+		* 3. addName 함수문에 case를 추가한다, (break 주의할것!)
+		* 4. Convert.c의 mode_select 함수에 case를 추가한다. (함수이름 작성하고 break 주의!)
+		* 5. 새로 소스파일을 열고 함수를 작성한다.
+		* 6. Processing.h에 해당 함수원형과 자잘이 함수원형을 작성한다. (함수 원형 올바르게 작성하자!)
+		*/
 
 	default:
 		printf("mode is invaild! \n");
@@ -194,13 +220,13 @@ int addName(char* oldName, char** newName, unsigned int mode)
 	// 3. oldName에서 .의 인덱스 위치를 찾는 코드
 	/*-------------------------------------------------*/
 
-	int null_idx = strlen(oldName);
+	int dot_idx = strlen(oldName);
 
 	for (int i = 0; i < strlen(oldName); i++)
 	{
 		if (oldName[i] == '.')
 		{
-			null_idx = i;
+			dot_idx = i;
 			break;
 		}
 	}
@@ -209,12 +235,16 @@ int addName(char* oldName, char** newName, unsigned int mode)
 	// 4. newName을 만들것
 	/*-------------------------------------------------*/
 		
-	strncpy(*newName, oldName, null_idx); // .bmp전까지만 복사
-	(*newName)[null_idx] = NULL; //strcpy는 널종료문자를 추가 안함
+	strncpy(*newName, oldName, dot_idx); // .bmp전까지만 복사
+	(*newName)[dot_idx] = NULL; //strcpy는 널종료문자를 추가 안함
 	// 또한, strcat은 맨처음 NULL의 인덱스에 문자열을 추가함
 
 	strcat(*newName, additional_Name);
-	strcat(*newName, ".bmp");
+
+	if (mode != 13)
+		strcat(*newName, ".bmp");
+	else
+		strcat(*newName, ".txt");
 
 	return 0;
 }
