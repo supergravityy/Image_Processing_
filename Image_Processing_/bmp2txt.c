@@ -36,6 +36,11 @@ int convert_TXT(char* oldName, char* newName)
 	/* 2. 변수선언 + 이미지 읽기 + txt 파일에 쓰기 */
 	/*---------------------------------------*/
 
+	fseek(fileBMP, fileheader.offset, SEEK_SET); // raw 데이터가 있는 위치로 시커 이동
+
+	if (infoheader.ImageSize == 0) // 헤더에 잘못 작성되어있는경우 감안
+		infoheader.ImageSize = infoheader.width * infoheader.height;
+
 	BYTE* RAW = (BYTE*)malloc(infoheader.ImageSize * sizeof(BYTE));
 
 	if (RAW == NULL)
@@ -45,7 +50,13 @@ int convert_TXT(char* oldName, char* newName)
 		goto close;
 	}
 
-	fread(RAW, infoheader.ImageSize, 1, fileBMP);
+	size_t totoal_bytes = fread(RAW, infoheader.ImageSize, 1, fileBMP);
+
+	if (totoal_bytes != infoheader.ImageSize)
+	{
+		printf("Error reading RAW data. Expected %u bytes, read %zu bytes.\n", infoheader.ImageSize, totoal_bytes);
+		errorcode = 6;	
+	}
 
 	fprintf(fileTXT, "The information of %s\n\n", newName);
 	write_header(&fileheader,&infoheader,RGB,fileTXT);
@@ -129,7 +140,7 @@ void write_raw(BITMAPINFOHEADER* infoheader, BYTE * RAW,FILE* TXT,int* errCode )
 	fprintf(TXT, "\n\nThis is RAW data \n\n"); // RAW 파일의 시작점 알림
 
 	unsigned long count = 0;
-	
+
 	while (count < infoheader->ImageSize)
 	{
 		fprintf(TXT,"%X ", *(RAW+count));
