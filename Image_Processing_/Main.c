@@ -1,9 +1,6 @@
 #include "Convert.h"
 #define STR_LEN 100
 
-int isBMP(char*);
-int addName(char*, char**, unsigned int);
-
 int main()
 {
 	char* originalName = (char*)malloc(sizeof(char) * STR_LEN);
@@ -53,7 +50,8 @@ int main()
 		printf("11. binarization\n");
 		printf("12. invert\n");
 		printf("13. bmp2txt\n");
-		printf("14. Quit\n");
+		printf("14. revise header\n");
+		printf("15. Quit\n");
 
 		printf("type the mode you want : ");
 		scanf("%u", &mode);
@@ -87,9 +85,12 @@ int main()
 	if (mode != 13) //txt 파일로 변환하는 과정은 기존 영상처리와 차이가 많이 나기에, 따로 선언
 		result = convert_BMP(originalName, neoName, mode);
 	else
-		result = convert_TXT(originalName, neoName, mode);
+		result = convert_TXT(originalName, neoName);
 
-	if(result)
+	if (result == 6)
+		printf("\nYour file looks like it needs editing~~\nIf you want, Please restart application!\n\n");
+
+	if(result>0 && result != 6)
 	{
 		printf("Fatal error occured! => %d \n\n", result);
 		goto termination;
@@ -108,6 +109,8 @@ termination:
 
 	free(originalName);
 	free(neoName);
+
+
 
 	return 0;
 }

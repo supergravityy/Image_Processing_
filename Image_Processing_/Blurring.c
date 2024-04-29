@@ -12,7 +12,7 @@ int blurring(BYTE* old_buffer, BYTE* new_buffer, BITMAPINFOHEADER* infoheader, i
 	{
 		printf("Memory allocation Error! \n");
 		*errcCode = 2;
-		goto alloc_err;//gdgfs
+		goto alloc_err;
 	}
 
 	/*----------------------------------*/
@@ -84,7 +84,7 @@ BYTE col_cal(BYTE* temp_buffer, double* kernel, int h, int w, int width, int hei
 {
 	double sum = 0.0;
 	double N = kernel[0];
-	double column_vec[3] = { kernel[0]/N , kernel[3]/N , kernel[6]/N  }; // 정규화
+	double column_vec[3] = { kernel[0]/N , kernel[3]/N , kernel[6]/N }; // 정규화
 	int wrapped_j = 0;
 
 	for (int j = w - 1; j < w + 2; j++) // j -> 열(x축)

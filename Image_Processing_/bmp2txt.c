@@ -1,13 +1,16 @@
 #include "Convert.h"
 
+int Extern_App_STAT = 0;
+char CMD[1024];
+BYTE WIN_STAT = 1;
+
 int convert_TXT(char* oldName, char* newName)
 {
 	/*---------------------------------------*/
 	/* 1. 파일열기 + 헤더읽기 + 파일검사 */
 	/*---------------------------------------*/
 
-	int errorcode = 0; int txt_stat = 0; BYTE win_stat = 1; //플래그들
-	char command[1024]; // 입력버퍼에 문자열을 쓰기위한 배열선언
+	int errorcode = 0;
 
 	FILE* fileBMP;
 	FILE* fileTXT;
@@ -67,7 +70,7 @@ int convert_TXT(char* oldName, char* newName)
 	/*---------------------------------------*/
 
 	if (fileTXT != NULL)
-		txt_stat++;
+		Extern_App_STAT++;
 
 clean_up:
 	free(RAW);
@@ -77,19 +80,19 @@ close:
 	fclose(fileTXT);
 
 
-	if (txt_stat) // 파일이 정상적 닫혔으니, 텍스트 편집기 실행
+	if (Extern_App_STAT) // 파일이 정상적 닫혔으니, 텍스트 편집기 실행
 	{
 		fflush(stdin);
-		sprintf(command,"start notepad.exe %s",newName); 
+		sprintf(CMD,"start notepad.exe %s",newName); 
 		// 비동기적으로 두 프로세스를 실행시키기 위해, 입력버퍼에 명령어를 옮긴다
-		win_stat = system(command); 
-		// win_stat = system(newName); 이것만 실행시키면, 메모장과 프로세스가 동기적으로 실행되어 
+		WIN_STAT = system(CMD); 
+		// WIN_STAT = system(newName); 이것만 실행시키면, 메모장과 프로세스가 동기적으로 실행되어 
 		// 메모장이 닫힐때까지, 프로세스는 대기하여야 한다.
 	}
 		
 
 		
-	if(~win_stat) // 성공시 0을 반환함
+	if(~WIN_STAT) // 성공시 0을 반환함
 		printf("\nThe NotePad app has been executed!\n");
 
 	else

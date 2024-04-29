@@ -8,8 +8,8 @@
 #include<string.h>
 #include<math.h>
 
-#define _USE_MATH_DEFINES
-#define QUIT 14
+#define _USE_MATH_DEFINES6
+#define QUIT 15
 
 #pragma pack(2) 
 // 윈도우가 bmp 헤더를 올바르게 읽어야 하기때문에, 구조체의 멤버를 기존의 8바이트가 아닌 2바이트로 맞춤
@@ -50,6 +50,14 @@ typedef struct
 	BYTE red;
 	BYTE reserved;
 }BITMAPColorPalette;
+
+extern int Extern_App_STAT;
+extern BYTE WIN_STAT; //플래그들
+extern char CMD[1024]; // 입력버퍼에 문자열을 쓰기위한 배열선언
+// 전역변수는 BMP2TXT 소스에 선언되어 있다
+
+int isBMP(char*);
+int addName(char*, char**, unsigned int);
 
 int convert_BMP(char*, char*, unsigned int);
 void print_inform(BITMAPFILEHEADER*, BITMAPINFOHEADER*, BITMAPColorPalette*);
