@@ -1,20 +1,9 @@
 #include "Convert.h"
 #include "Processing.h"
 
-extern int Extern_App_STAT ;
-extern char CMD[1024];
-extern BYTE WIN_STAT ;
-
 int convert_BMP(char* oldName, char* newName, unsigned int mode)
 {
 	int errorcode = 0;
-/*
-* 1. 파일열기 불가능
-* 2. 메모리 할당 불가능
-* 3. 메모리 산술 이슈
-* 4. 치명적인 메모리 이슈
-* 5. 0으로 나눌뻔
-*/
 
 	/*---------------------------------------*/
 	/* 1. 파일열기 + 헤더읽기 + 파일검사 */
@@ -105,29 +94,8 @@ close:
 	fclose(oldBMP);
 	fclose(newBMP);
 
-	if (Extern_App_STAT) // 파일이 정상적 닫혔으니, 텍스트 편집기 실행
-	{
-		fflush(stdin);
-		sprintf(CMD, "start ms %s", newName);
-		// 비동기적으로 두 프로세스를 실행시키기 위해, 입력버퍼에 명령어를 옮긴다
-		WIN_STAT = system(CMD);
-		// WIN_STAT = system(newName); 이것만 실행시키면, 메모장과 프로세스가 동기적으로 실행되어 
-		// 메모장이 닫힐때까지, 프로세스는 대기하여야 한다.
-	}
-
-	if (~WIN_STAT) // 성공시 0을 반환함
-		printf("\nThe Image Viewer has been executed!\n");
-
-	else
-	{
-		printf("Failed to open Image Viewer!!\n");
-		errorcode = 7;
-	}
-
 	return errorcode; // 정상작동은 false를 반환
 }
-
-
 
 
 void print_inform(BITMAPFILEHEADER* fileHeader, BITMAPINFOHEADER* infoHeader, BITMAPColorPalette* rgb)
@@ -202,7 +170,7 @@ int mode_select(char* old_buffer, char* new_buffer, BITMAPINFOHEADER* infoheader
 		histo_streching(old_buffer, new_buffer, infoheader, errCode);
 		break;
 	case 10:
-		// 엠보싱
+		embossing(old_buffer, new_buffer, infoheader, errCode);
 		break;
 	case 11:
 		// 이진화

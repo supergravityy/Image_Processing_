@@ -131,6 +131,7 @@
     <ClCompile Include="BMP2TXT.c" />
     <ClCompile Include="Convert.c" />
     <ClCompile Include="Edge_Detecting.c" />
+    <ClCompile Include="Embossing.c" />
     <ClCompile Include="Equalizing.c" />
     <ClCompile Include="Inverting.c" />
     <ClCompile Include="Main.c">

@@ -14,6 +14,7 @@ int sharpening(BYTE*, BYTE*, BITMAPINFOHEADER*, int*);
 int edge_detecting(BYTE*, BYTE*, BITMAPINFOHEADER*, int*);
 int mid_filtering(BYTE*, BYTE*, BITMAPINFOHEADER*, int*);
 int inverting(BYTE*, BYTE*, BITMAPINFOHEADER*, int*);
+int embossing(BYTE*, BYTE*, BITMAPINFOHEADER*, int*);
 
 typedef struct
 {
@@ -30,7 +31,6 @@ int histo_streching(BYTE*, BYTE*, BITMAPINFOHEADER*, int*);
 
 BYTE row_cal(BYTE* , double* ,int ,int ,int ,int );
 BYTE col_cal(BYTE* , double* ,int ,int ,int ,int );
-BYTE sharp_cal(BYTE* , double* ,int ,int ,int ,int );
 BYTE sorting(BYTE*, int, int, int, int);
 
 void init_ARR(BYTE*, BITMAPINFOHEADER*, double*, STASTICS*);
@@ -81,6 +81,41 @@ inline void draw_bar(int Num)
 		printf("▥");
 
 	printf("\n");
+}
+
+inline BYTE sharp_cal(BYTE* old_buffer, double* kernel, int h, int w, int width, int height)
+{
+	double sum = 0;
+	int wrapped_i = 0; int wrapped_j = 0;
+
+	for (int i = h - 1; i < h + 2; i++)
+	{
+		wrapped_i = circular_wrapping(i, height);
+
+		for (int j = w - 1; j < w + 2; j++)
+		{
+			wrapped_j = circular_wrapping(j, width);
+			sum += (double)old_buffer[wrapped_i * width + wrapped_j] * kernel[(i - h + 1) * 3 + (j - w + 1)];
+		}
+	}
+
+	/*--------------------------------*/
+	// 3. 샤프닝은 필연적으로 필터의 구조때문에 밝기값에 걸칠수도 있다 -> 클리핑이 필요
+	/*--------------------------------*/
+
+	int result = (int)(sum + 0.5);
+
+	return (BYTE)clipping(result);
+}
+
+inline int clipping(int pxl)
+{
+	if (pxl > 255)
+		pxl = 255;
+	else if (pxl < 0)
+		pxl = 0;
+
+	return (BYTE)(pxl);
 }
 
 #endif

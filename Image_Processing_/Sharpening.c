@@ -22,34 +22,3 @@ int sharpening(BYTE* old_buffer, BYTE* new_buffer, BITMAPINFOHEADER* infoheader,
 
 	return 0;
 }
-
-BYTE sharp_cal(BYTE* old_buffer, double* kernel, int h, int w, int width, int height)
-{
-    double sum = 0;
-    int wrapped_i = 0; int wrapped_j = 0;
-
-    for (int i = h - 1; i < h + 2; i++)
-    {
-        wrapped_i = circular_wrapping(i, height);
-        
-        for (int j = w - 1; j < w + 2; j++)
-        {
-            wrapped_j = circular_wrapping(j, width);
-            sum += (double)old_buffer[wrapped_i * width + wrapped_j] * kernel[(i - h + 1) * 3 + (j - w + 1)];
-        }
-    }
-
-    /*--------------------------------*/
-    // 3. 샤프닝은 필연적으로 필터의 구조때문에 밝기값에 걸칠수도 있다 -> 클리핑이 필요
-    /*--------------------------------*/
-
-    int result = (int)(sum + 0.5);
-
-    if (result < 0)
-        result = 0;
-
-    else if (result > 255)
-        result = 255;
-
-    return (BYTE)(result);
-}

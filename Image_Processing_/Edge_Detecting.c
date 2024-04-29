@@ -14,7 +14,6 @@ int edge_detecting(BYTE* old_buffer, BYTE* new_buffer, BITMAPINFOHEADER* infohea
 	/*---------------------------*/
 
 	printf("\nNow edge_detecting calculation is start!\n");
-	BYTE caution = 0;
 
 	for (int h = 0; h < infoheader->height; h++)
 		for (int w = 0; w < infoheader->width; w++)
