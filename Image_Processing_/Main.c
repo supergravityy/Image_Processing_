@@ -185,7 +185,7 @@ int addName(char* oldName, char** newName, unsigned int mode)
 		strcpy(additional_Name, "_rotated");
 		break;
 	case 6:
-		strcpy(additional_Name, "minimized");
+		strcpy(additional_Name, "_minimized");
 		break;
 	case 7:
 		strcpy(additional_Name, "_magnified");

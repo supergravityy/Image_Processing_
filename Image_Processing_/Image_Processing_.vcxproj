@@ -138,6 +138,7 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="Median_filtering.c" />
+    <ClCompile Include="Minimizing.c" />
     <ClCompile Include="Reuseful.c" />
     <ClCompile Include="Revise.c" />
     <ClCompile Include="Sharpening.c" />

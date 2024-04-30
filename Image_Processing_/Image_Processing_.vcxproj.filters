@@ -54,6 +54,9 @@
     <ClCompile Include="Revise.c">
       <Filter>소스 파일</Filter>
     </ClCompile>
+    <ClCompile Include="Minimizing.c">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Convert.h">

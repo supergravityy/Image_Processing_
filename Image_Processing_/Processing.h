@@ -16,6 +16,8 @@ int mid_filtering(BYTE*, BYTE*, BITMAPINFOHEADER*, int*);
 int inverting(BYTE*, BYTE*, BITMAPINFOHEADER*, int*);
 int embossing(BYTE*, BYTE*, BITMAPINFOHEADER*, int*);
 
+int minimizing(BYTE*, BYTE*, BITMAPINFOHEADER*, BITMAPFILEHEADER*, int*);
+
 typedef struct
 {
 	double mean;
@@ -38,7 +40,7 @@ void normalize_CDF(BYTE*, BITMAPINFOHEADER*, double*, STASTICS*);
 void write_hist(double*);
 void find_min_max(BYTE*, BITMAPINFOHEADER*, BYTE*);
 
-
+int minimizing(BYTE*, BYTE*, BITMAPINFOHEADER*, int*);
 
 inline int circular_wrapping(int idx, int max)
 {

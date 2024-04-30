@@ -41,12 +41,8 @@ int convert_BMP(char* oldName, char* newName, unsigned int mode)
 	}
 
 	/*---------------------------------------*/
-	/* 2. 헤더 입력 + 변수 선언 + 이미지 읽기 */
+	/* 2. 변수 선언 + 이미지 읽기 */
 	/*---------------------------------------*/
-
-	fwrite((char*)&fileheader, sizeof(BITMAPFILEHEADER), 1, newBMP);
-	fwrite((char*)&infoheader, sizeof(BITMAPINFOHEADER), 1, newBMP);
-	fwrite((char*)RGB, sizeof(RGB), 1, newBMP);
 
 	BYTE* old_buffer = (BYTE*)malloc(infoheader.ImageSize * sizeof(BYTE));
 	BYTE* new_buffer = (BYTE*)malloc(infoheader.ImageSize * sizeof(BYTE));
@@ -64,7 +60,7 @@ int convert_BMP(char* oldName, char* newName, unsigned int mode)
 	/* 3. 프로세싱, 프로세싱중 오류 확인 */
 	/*---------------------------------------*/
 
-	int result = mode_select(old_buffer, new_buffer, &infoheader, mode, &errorcode);
+	int result = mode_select(old_buffer, new_buffer, &infoheader, &fileheader,mode, &errorcode);
 
 	if(result)
 	{
@@ -81,6 +77,9 @@ int convert_BMP(char* oldName, char* newName, unsigned int mode)
 
 	printf("Image Processing has been completed! successfully\n");
 ignore:
+	fwrite((char*)&fileheader, sizeof(BITMAPFILEHEADER), 1, newBMP);
+	fwrite((char*)&infoheader, sizeof(BITMAPINFOHEADER), 1, newBMP);
+	fwrite((char*)RGB, sizeof(RGB), 1, newBMP);
 	fwrite(new_buffer, infoheader.ImageSize, 1, newBMP);
 
 	/*---------------------------------------*/
@@ -137,7 +136,7 @@ int print_data(BYTE* buffer_inverted, DWORD pedded_width, DWORD height)
 	return real_size;
 }
 
-int mode_select(char* old_buffer, char* new_buffer, BITMAPINFOHEADER* infoheader, unsigned int mode, int* errCode)
+int mode_select(char* old_buffer, char* new_buffer, BITMAPINFOHEADER* infoheader, BITMAPFILEHEADER* fileheader,unsigned int mode, int* errCode)
 {
 	switch (mode)
 	{
@@ -158,7 +157,7 @@ int mode_select(char* old_buffer, char* new_buffer, BITMAPINFOHEADER* infoheader
 		// 회전
 		break;
 	case 6:
-		// 축소
+		minimizing(old_buffer, &new_buffer, infoheader, fileheader,errCode);
 		break;
 	case 7:
 		// 확대

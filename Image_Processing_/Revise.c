@@ -64,7 +64,7 @@ int revising(char* oldName, char* newName)
 		else
 			read_bytes++;
 		// 그래도 카운트는 증가해야 한다.
-	} 
+	}
 
 	printf("Read_bytes : %d, Size : %d, is End Of File : %s\n\n", read_bytes, size, end_of_file?"True":"False");
 
