@@ -83,6 +83,16 @@ inline void draw_bar(int Num)
 	printf("\n");
 }
 
+inline int clipping(int pxl)
+{
+	if (pxl > 255)
+		pxl = 255;
+	else if (pxl < 0)
+		pxl = 0;
+
+	return (BYTE)(pxl);
+}
+
 inline BYTE sharp_cal(BYTE* old_buffer, double* kernel, int h, int w, int width, int height)
 {
 	double sum = 0;
@@ -106,16 +116,6 @@ inline BYTE sharp_cal(BYTE* old_buffer, double* kernel, int h, int w, int width,
 	int result = (int)(sum + 0.5);
 
 	return (BYTE)clipping(result);
-}
-
-inline int clipping(int pxl)
-{
-	if (pxl > 255)
-		pxl = 255;
-	else if (pxl < 0)
-		pxl = 0;
-
-	return (BYTE)(pxl);
 }
 
 #endif

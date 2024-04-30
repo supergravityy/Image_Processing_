@@ -50,7 +50,7 @@ int main()
 		printf("11. binarization\n");
 		printf("12. invert\n");
 		printf("13. bmp2txt\n");
-		printf("14. revise header\n");
+		printf("14. revising\n");
 		printf("15. Quit\n");
 
 		printf("type the mode you want : ");
@@ -82,10 +82,14 @@ int main()
 
 	int result;
 
-	if (mode != 13) //txt 파일로 변환하는 과정은 기존 영상처리와 차이가 많이 나기에, 따로 선언
-		result = convert_BMP(originalName, neoName, mode);
-	else
+	if (mode == 13) //txt 파일로 변환하는 과정은 기존 영상처리와 차이가 많이 나기에, 따로 선언
 		result = convert_TXT(originalName, neoName);
+
+	else if (mode == 14)
+		result = revising(originalName, neoName);
+
+	else
+		result = convert_BMP(originalName, neoName, mode);
 
 	if (result == 6)
 		printf("\nYour file looks like it needs editing~~\nIf you want, Please restart application!\n\n");
@@ -102,6 +106,7 @@ int main()
 		5 : 0으로 나눌뻔함
 		6 : 패딩이 필요 (bmp2txt 기능에서만)
 		7 : 윈도우 앱 실행오류
+		8 : 파일 수정이 잘못되었음
 		*/
 	}
 
@@ -202,6 +207,9 @@ int addName(char* oldName, char** newName, unsigned int mode)
 		break;
 	case 13:
 		strcpy(additional_Name, "_4debug");
+		break;
+	case 14:
+		strcpy(additional_Name, "_revised");
 		break;
 
 		/*

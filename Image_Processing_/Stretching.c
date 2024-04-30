@@ -43,7 +43,7 @@ int histo_streching(BYTE* old_buffer, BYTE* new_buffer, BITMAPINFOHEADER* infohe
 	/*-------------------------------------*/
 
 	double scale_factor = MAX_BRIT_VAL / denominator;
-	for (int idx = 0; idx < infoheader->ImageSize; idx++)
+	for (unsigned int idx = 0; idx < infoheader->ImageSize; idx++)
 		new_buffer[idx] = (BYTE)round((old_buffer[idx] - factor[0]) * scale_factor);
 
 	init_ARR(new_buffer, infoheader, temp_arr, &bmp_Data);
@@ -64,7 +64,7 @@ void find_min_max(BYTE* old_buffer, BITMAPINFOHEADER* infoheader, BYTE* factor)
 {
 	// 0번은 최소, 1번은 최대
 
-	for (int idx = 0; idx < infoheader->ImageSize; idx++)
+	for (unsigned int idx = 0; idx < infoheader->ImageSize; idx++)
 	{
 		if (factor[0] > old_buffer[idx])
 			factor[0] = old_buffer[idx];

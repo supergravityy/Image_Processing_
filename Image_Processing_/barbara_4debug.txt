@@ -15,7 +15,7 @@ Column size : 512
 Planes : 1
 BitPerPixel : 8
 Compressed : 0
-Size of Image : 262144
+Size of Image : 0
 X Pels Per Meter : 2834
 Y Pels Per Meter : 2834
 A Number of used color : 0

@@ -68,6 +68,10 @@ int convert_TXT(char*, char*);
 void write_header(BITMAPFILEHEADER*, BITMAPINFOHEADER*, BITMAPColorPalette*, FILE*);
 void write_raw(BITMAPINFOHEADER*, BYTE*, FILE*, int*);
 
+int revising(char*, char*);
+int revise_header(BITMAPFILEHEADER*, BITMAPINFOHEADER*, BITMAPColorPalette*);
+int zero_padding(BYTE*, int, int);
+
 #pragma pack(pop)
 // 혹시 이따가 본래 구조체를 써야 할 수도 있기에, 다시 본래대로 바꿔 놓는다.
 

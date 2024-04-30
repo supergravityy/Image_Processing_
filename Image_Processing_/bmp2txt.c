@@ -41,10 +41,12 @@ int convert_TXT(char* oldName, char* newName)
 
 	fseek(fileBMP, fileheader.offset, SEEK_SET); // raw 데이터가 있는 위치로 시커 이동
 
-	if (infoheader.ImageSize == 0) // 헤더에 잘못 작성되어있는경우 감안
-		infoheader.ImageSize = infoheader.width * infoheader.height;
+	int size = infoheader.ImageSize;
 
-	BYTE* RAW = (BYTE*)malloc(infoheader.ImageSize * sizeof(BYTE));
+	if (infoheader.ImageSize == 0) // 헤더에 잘못 작성되어있는경우 감안
+		size = infoheader.width * infoheader.height;
+
+	BYTE* RAW = (BYTE*)malloc(size * sizeof(BYTE));
 
 	if (RAW == NULL)
 	{
@@ -53,11 +55,11 @@ int convert_TXT(char* oldName, char* newName)
 		goto close;
 	}
 
-	size_t totoal_bytes = fread(RAW, infoheader.ImageSize, 1, fileBMP);
+	size_t totoal_bytes = fread(RAW, size, 1, fileBMP);
 
-	if (totoal_bytes != infoheader.ImageSize)
+	if (totoal_bytes != size)
 	{
-		printf("Error reading RAW data. Expected %u bytes, read %zu bytes.\n", infoheader.ImageSize, totoal_bytes);
+		printf("Error reading RAW data. Expected %u bytes, but read only %zu bytes.\n", size, totoal_bytes);
 		errorcode = 6;	
 	}
 
@@ -134,7 +136,7 @@ void write_header(BITMAPFILEHEADER* fileheader, BITMAPINFOHEADER* infoheader, BI
 
 	for (int i = 0; i < 256; i++)
 		fprintf(TXT,"Number(%d) Blue: %d, Green: %d, Red: %d, Reserved: %d\n",
-			i, rgb->blue, rgb->green, rgb->red, rgb->reserved);
+			i, (rgb+i)->blue, (rgb+i)->green, (rgb + i)->red, (rgb + i)->reserved);
 }
 
 
@@ -142,9 +144,10 @@ void write_raw(BITMAPINFOHEADER* infoheader, BYTE * RAW,FILE* TXT,int* errCode )
 {
 	fprintf(TXT, "\n\nThis is RAW data \n\n"); // RAW 파일의 시작점 알림
 
-	unsigned long count = 0;
+	long count = 0;
+	int size = infoheader->width * infoheader->height; // 헤더에 잘못 작성되어있는경우 감안
 
-	while (count < infoheader->ImageSize)
+	while (count < size)
 	{
 		fprintf(TXT,"%X ", *(RAW+count));
 

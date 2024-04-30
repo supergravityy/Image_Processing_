@@ -115,7 +115,7 @@ void print_inform(BITMAPFILEHEADER* fileHeader, BITMAPINFOHEADER* infoHeader, BI
 	for (int i = 0; i < 256; i++)
 	{
 		printf("Number(%d) Blue: %d, Green: %d, Red: %d, Reserved: %d\n",
-			i, rgb->blue, rgb->green, rgb->red, rgb->reserved);
+			i, (rgb + i)->blue, (rgb + i)->green, (rgb + i)->red, (rgb + i)->reserved);
 	}
 }
 

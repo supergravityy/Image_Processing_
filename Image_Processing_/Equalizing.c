@@ -41,7 +41,7 @@ int histo_equalizing(BYTE* old_buffer, BYTE* new_buffer, BITMAPINFOHEADER* infoh
 
 	normalize_CDF(old_buffer, infoheader, TEMP_ARR, &bmp_Data);
 
-	for (int idx = 0; idx < infoheader->ImageSize; idx++)
+	for (unsigned int idx = 0; idx < infoheader->ImageSize; idx++)
 		new_buffer[idx] = (BYTE)TEMP_ARR[old_buffer[idx]];
 	// ★ 본래 버퍼의 픽셀의 밝기값을 기존의 히스토그램에 넣어버리면, 그 안의 밝기값의 정보가 된다
 	// ★ 해당 정보(확률*최대밝기값)를 처리된 밝기값으로 간주하고, 재 매핑하여
@@ -72,7 +72,7 @@ void init_ARR(BYTE* buffer, BITMAPINFOHEADER* infoheader, double* temp_arr, STAS
 	data->mean = 0; data->pow_sum =0; data->sum = 0; data->variance = 0;
 	// 통계를 위한 구조체 전부 초기화
 
-	for (int idx = 0; idx < infoheader->ImageSize; idx++)
+	for (unsigned int idx = 0; idx < infoheader->ImageSize; idx++)
 	{
 		for (int brit = 0; brit < MAX_BRIT_VAL; brit++)
 		{
