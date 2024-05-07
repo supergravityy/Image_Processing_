@@ -17,7 +17,7 @@ int convert_BMP(char* oldName, char* newName, unsigned int mode)
 	BITMAPINFOHEADER infoheader;
 	BITMAPColorPalette RGB[256];
 
-	// new
+	// newasdf
 
 	oldBMP = fopen(oldName, "rb");
 	newBMP = fopen(newName, "wb");
