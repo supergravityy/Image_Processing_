@@ -64,8 +64,7 @@ int addName(char*, char**, unsigned int);
 int convert_BMP(char*, char*, unsigned int);
 void print_inform(BITMAPFILEHEADER*, BITMAPINFOHEADER*, BITMAPColorPalette*);
 int print_data(BYTE*, DWORD, DWORD);
-int mode_select(char*, char*, BITMAPINFOHEADER*, BITMAPFILEHEADER*, unsigned int, int*);
-int mode_select(char*, char*, BITMAPINFOHEADER*, BITMAPFILEHEADER*, unsigned int, int*);
+int mode_select(BYTE**, BYTE**, BITMAPINFOHEADER*, BITMAPFILEHEADER*, unsigned int, int*);
 
 int convert_TXT(char*, char*);
 void write_header(BITMAPFILEHEADER*, BITMAPINFOHEADER*, BITMAPColorPalette*, FILE*);
@@ -74,7 +73,6 @@ void write_raw(BITMAPINFOHEADER*, BYTE*, FILE*, int*);
 int revising(char*, char*);
 int revise_header(BITMAPFILEHEADER*, BITMAPINFOHEADER*, BITMAPColorPalette*);
 int zero_padding(BYTE*, int, int);
-
 
 
 #endif

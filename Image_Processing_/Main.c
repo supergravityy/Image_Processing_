@@ -23,7 +23,7 @@ int main()
 			return 0;
 
 		// fgets는 개행 문자까지 입력 받으므로, 개행 문자를 NULL로 바꿔줌
-		size_t ln = strlen(originalName) - 1; // NULL 전의 개행을 NULL로~
+		size_t ln = strlen(originalName) - 1; // NULL 전의 개행을 NULL로 체인지
 
 		if (originalName[ln] == '\n')
 			originalName[ln] = '\0';
@@ -74,7 +74,7 @@ int main()
 	}
 
 	/*printf("Name change progress has been completed! \n");*/
-	printf("%s\n", neoName);
+	printf("\n\n%s\n", neoName);
 
 	/*-------------------------------------------------*/
 	// 모드에 따라서 본격적인 변환

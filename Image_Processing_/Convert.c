@@ -17,7 +17,6 @@ int convert_BMP(char* oldName, char* newName, unsigned int mode)
 	BITMAPINFOHEADER infoheader;
 	BITMAPColorPalette RGB[256];
 
-	// newasdf
 
 	oldBMP = fopen(oldName, "rb");
 	newBMP = fopen(newName, "wb");
@@ -37,7 +36,7 @@ int convert_BMP(char* oldName, char* newName, unsigned int mode)
 
 	if(infoheader.BitPerPxl != 8)
 	{
-		printf("Image file is not black & white!\n\n");
+		printf("\n\nImage file is not black & white!\n\n");
 		errorcode = 1;
 		goto close;
 	}
@@ -62,7 +61,7 @@ int convert_BMP(char* oldName, char* newName, unsigned int mode)
 	/* 3. 프로세싱, 프로세싱중 오류 확인 */
 	/*---------------------------------------*/
 
-	int result = mode_select(old_buffer, new_buffer, &infoheader, &fileheader,mode, &errorcode);
+	int result = mode_select(&old_buffer, &new_buffer, &infoheader, &fileheader,mode, &errorcode);
 
 	if(result)
 	{
@@ -98,8 +97,6 @@ close:
 	if (newBMP != NULL) fclose(newBMP);
 
 	return errorcode; // 정상작동은 false를 반환
-
-	// 여기서 중단점 명령이 실행되었다고 자꾸 뜸.
 }
 
 
@@ -142,48 +139,47 @@ int print_data(BYTE* buffer_inverted, DWORD pedded_width, DWORD height)
 	return real_size;
 }
 
-int mode_select(char* old_buffer, char* new_buffer, BITMAPINFOHEADER* infoheader, BITMAPFILEHEADER* fileheader,unsigned int mode, int* errCode)
+int mode_select(BYTE** old_buffer, BYTE** new_buffer, BITMAPINFOHEADER* infoheader, BITMAPFILEHEADER* fileheader,unsigned int mode, int* errCode)
 {
 	switch (mode)
 	{
 	case 1:
 		//duplicate(old_buffer, new_buffer, infoheader, errCode);
-		blurring(old_buffer, new_buffer, infoheader, errCode);
+		blurring(*old_buffer, *new_buffer, infoheader, errCode);
 		break;
 	case 2:
-		sharpening(old_buffer, new_buffer, infoheader, errCode);
+		sharpening(*old_buffer, *new_buffer, infoheader, errCode);
 		break;
 	case 3:
-		mid_filtering(old_buffer, new_buffer, infoheader, errCode);
+		mid_filtering(*old_buffer, *new_buffer, infoheader, errCode);
 		break;
 	case 4:
-		edge_detecting(old_buffer, new_buffer, infoheader, errCode);
+		edge_detecting(*old_buffer, *new_buffer, infoheader, errCode);
 		break;
 	case 5:
 		// 회전
 		break;
 	case 6:
-		minimizing(old_buffer, &new_buffer, infoheader, fileheader, errCode);
+		minimizing(*old_buffer, new_buffer, infoheader, fileheader, errCode);
 		break;
 	case 7:
-		magnifying(old_buffer, &new_buffer, infoheader, fileheader, errCode);
+		magnifying(*old_buffer, new_buffer, infoheader, fileheader, errCode);
 		break;
 	case 8:
-		histo_equalizing(old_buffer, new_buffer, infoheader, errCode);
+		histo_equalizing(*old_buffer, *new_buffer, infoheader, errCode);
 		break;
 	case 9:
-		histo_streching(old_buffer, new_buffer, infoheader, errCode);
+		histo_streching(*old_buffer, *new_buffer, infoheader, errCode);
 		break;
 	case 10:
-		embossing(old_buffer, new_buffer, infoheader, errCode);
+		embossing(*old_buffer, *new_buffer, infoheader, errCode);
 		break;
 	case 11:
 		// 이진화
 		break;
 	case 12:
-		inverting(old_buffer, new_buffer, infoheader, errCode);
+		inverting(*old_buffer, *new_buffer, infoheader, errCode);
 		break;
-	//bmp2txt 함수는 여기서 쓰이지 않는다.
 	}
 
 	return *errCode;

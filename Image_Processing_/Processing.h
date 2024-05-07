@@ -21,7 +21,6 @@ int magnifying(BYTE*, BYTE**, BITMAPINFOHEADER*, BITMAPFILEHEADER*, int*);
 
 int check_size_4m(int*, int*, BITMAPINFOHEADER*);
 int check_size_4M(int*, int*, BITMAPINFOHEADER*);
-BYTE bilinear_interpolation(double , double , double , double , double , double);
 
 
 
@@ -125,6 +124,11 @@ inline BYTE sharp_cal(BYTE* old_buffer, double* kernel, int h, int w, int width,
 	int result = (int)(sum + 0.5);
 
 	return (BYTE)clipping(result);
+}
+
+inline BYTE bilinear_interpolation(double upLeft, double upRight, double downLeft, double downRight, double xDiff, double yDiff)
+{
+	return (BYTE)floor((1 - yDiff) * (downLeft * xDiff + (1 - xDiff) * downRight) + yDiff * (upLeft * xDiff + (1 - xDiff) * upRight));
 }
 
 #endif

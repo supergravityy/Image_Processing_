@@ -107,11 +107,6 @@ int magnifying(BYTE* old_buffer, BYTE** new_buffer, BITMAPINFOHEADER* infoheader
 	return 0;
 }
 
-BYTE bilinear_interpolation(double upLeft, double upRight, double downLeft, double downRight, double xDiff, double yDiff)
-{
-	return (BYTE)floor((1 - yDiff) * (downLeft * xDiff + (1 - xDiff) * downRight) + yDiff * (upLeft * xDiff + (1 - xDiff) * upRight));
-}
-
 int check_size_4M(int* newWidth, int* newHeight, BITMAPINFOHEADER* infoheader)
 {
 	int width_check = 1; int height_check = 1;
@@ -137,7 +132,13 @@ int check_size_4M(int* newWidth, int* newHeight, BITMAPINFOHEADER* infoheader)
 		height_check = 0;
 
 	if (!((DWORD)(*newWidth) * (DWORD)(*newHeight) < maximum)) // unsigned int 형의 표현가능한 크기보다 큰가?
-		width_check = 0; height_check = 0;
+	{
+		printf("This size is larger than what unsigned integers can express!\n");
+		printf("A maximum of unsigned inters can express by 0 ~ %d\n\n",maximum);
+		width_check = 1; 
+		height_check = 1;
+	}
+		
 
 	return width_check || height_check;
 }
