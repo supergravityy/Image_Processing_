@@ -140,6 +140,9 @@ int print_data(BYTE* buffer_inverted, DWORD pedded_width, DWORD height)
 }
 
 int mode_select(BYTE** old_buffer, BYTE** new_buffer, BITMAPINFOHEADER* infoheader, BITMAPFILEHEADER* fileheader,unsigned int mode, int* errCode)
+// 버퍼들을 이중 포인터로 받아야 한다. 그냥 포인터로 받고 기능함수들에서 2중포인터로 받아 재할당을 시키게 되면, 
+// 현재 함수의 파라미터 주소값을 받기때문에, 실질적인 함수인 convert_bmp 함수의 버퍼 지역변수들의 버퍼들이 가리키는 곳이 할당해제 되는 꼴이 된다. (기하학 처리 오류)
+// 거기다 fwrite로 몇 MB를 쓰려고 하게 되면, 당연히 힙섹션이 손상되었다고 오류가 나게 된다.
 {
 	switch (mode)
 	{
