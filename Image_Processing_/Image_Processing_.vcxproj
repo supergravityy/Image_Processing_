@@ -134,6 +134,7 @@
     <ClCompile Include="Embossing.c" />
     <ClCompile Include="Equalizing.c" />
     <ClCompile Include="Inverting.c" />
+    <ClCompile Include="Magnifying.c" />
     <ClCompile Include="Main.c">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
     </ClCompile>

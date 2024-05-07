@@ -17,10 +17,12 @@ int convert_BMP(char* oldName, char* newName, unsigned int mode)
 	BITMAPINFOHEADER infoheader;
 	BITMAPColorPalette RGB[256];
 
+	// new
+
 	oldBMP = fopen(oldName, "rb");
 	newBMP = fopen(newName, "wb");
 
-	if (oldBMP == NULL)
+	if (oldBMP == NULL || newBMP == NULL)
 	{
 		printf("Can not open file!\n\n");
 		errorcode = 1;
@@ -77,10 +79,12 @@ int convert_BMP(char* oldName, char* newName, unsigned int mode)
 
 	printf("Image Processing has been completed! successfully\n");
 ignore:
-	fwrite((char*)&fileheader, sizeof(BITMAPFILEHEADER), 1, newBMP);
+	fwrite((char*)&fileheader, sizeof(BITMAPFILEHEADER), 1, newBMP);	
 	fwrite((char*)&infoheader, sizeof(BITMAPINFOHEADER), 1, newBMP);
 	fwrite((char*)RGB, sizeof(RGB), 1, newBMP);
 	fwrite(new_buffer, infoheader.ImageSize, 1, newBMP);
+
+	
 
 	/*---------------------------------------*/
 	/* 4. 정리하기 + 뷰어 실행 */
@@ -90,10 +94,12 @@ clean_up:
 	free(old_buffer);
 	free(new_buffer);
 close:
-	fclose(oldBMP);
-	fclose(newBMP);
+	if (oldBMP != NULL) fclose(oldBMP);
+	if (newBMP != NULL) fclose(newBMP);
 
 	return errorcode; // 정상작동은 false를 반환
+
+	// 여기서 중단점 명령이 실행되었다고 자꾸 뜸.
 }
 
 
@@ -157,10 +163,10 @@ int mode_select(char* old_buffer, char* new_buffer, BITMAPINFOHEADER* infoheader
 		// 회전
 		break;
 	case 6:
-		minimizing(old_buffer, &new_buffer, infoheader, fileheader,errCode);
+		minimizing(old_buffer, &new_buffer, infoheader, fileheader, errCode);
 		break;
 	case 7:
-		// 확대
+		magnifying(old_buffer, &new_buffer, infoheader, fileheader, errCode);
 		break;
 	case 8:
 		histo_equalizing(old_buffer, new_buffer, infoheader, errCode);

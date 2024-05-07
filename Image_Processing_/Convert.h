@@ -8,10 +8,10 @@
 #include<string.h>
 #include<math.h>
 
-#define _USE_MATH_DEFINES6
+#define _USE_MATH_DEFINES
 #define QUIT 15
 
-#pragma pack(2) 
+#pragma pack(push,2) 
 // 윈도우가 bmp 헤더를 올바르게 읽어야 하기때문에, 구조체의 멤버를 기존의 8바이트가 아닌 2바이트로 맞춤
 
 typedef unsigned char BYTE;
@@ -51,6 +51,8 @@ typedef struct
 	BYTE reserved;
 }BITMAPColorPalette;
 
+#pragma pack(pop)
+
 extern int Extern_App_STAT;
 extern BYTE WIN_STAT; //플래그들
 extern char CMD[1024]; // 입력버퍼에 문자열을 쓰기위한 배열선언
@@ -62,7 +64,8 @@ int addName(char*, char**, unsigned int);
 int convert_BMP(char*, char*, unsigned int);
 void print_inform(BITMAPFILEHEADER*, BITMAPINFOHEADER*, BITMAPColorPalette*);
 int print_data(BYTE*, DWORD, DWORD);
-int mode_select(char*, char*, BITMAPINFOHEADER*, BITMAPFILEHEADER*,unsigned int, int*);
+int mode_select(char*, char*, BITMAPINFOHEADER*, BITMAPFILEHEADER*, unsigned int, int*);
+int mode_select(char*, char*, BITMAPINFOHEADER*, BITMAPFILEHEADER*, unsigned int, int*);
 
 int convert_TXT(char*, char*);
 void write_header(BITMAPFILEHEADER*, BITMAPINFOHEADER*, BITMAPColorPalette*, FILE*);
@@ -72,7 +75,6 @@ int revising(char*, char*);
 int revise_header(BITMAPFILEHEADER*, BITMAPINFOHEADER*, BITMAPColorPalette*);
 int zero_padding(BYTE*, int, int);
 
-#pragma pack(pop)
-// 혹시 이따가 본래 구조체를 써야 할 수도 있기에, 다시 본래대로 바꿔 놓는다.
+
 
 #endif

@@ -16,7 +16,14 @@ int mid_filtering(BYTE*, BYTE*, BITMAPINFOHEADER*, int*);
 int inverting(BYTE*, BYTE*, BITMAPINFOHEADER*, int*);
 int embossing(BYTE*, BYTE*, BITMAPINFOHEADER*, int*);
 
-int minimizing(BYTE*, BYTE*, BITMAPINFOHEADER*, BITMAPFILEHEADER*, int*);
+int minimizing(BYTE*, BYTE**, BITMAPINFOHEADER*, BITMAPFILEHEADER*, int*);
+int magnifying(BYTE*, BYTE**, BITMAPINFOHEADER*, BITMAPFILEHEADER*, int*);
+
+int check_size_4m(int*, int*, BITMAPINFOHEADER*);
+int check_size_4M(int*, int*, BITMAPINFOHEADER*);
+BYTE bilinear_interpolation(double , double , double , double , double , double);
+
+
 
 typedef struct
 {
@@ -35,12 +42,12 @@ BYTE row_cal(BYTE* , double* ,int ,int ,int ,int );
 BYTE col_cal(BYTE* , double* ,int ,int ,int ,int );
 BYTE sorting(BYTE*, int, int, int, int);
 
+
 void init_ARR(BYTE*, BITMAPINFOHEADER*, double*, STASTICS*);
 void normalize_CDF(BYTE*, BITMAPINFOHEADER*, double*, STASTICS*);
 void write_hist(double*);
 void find_min_max(BYTE*, BITMAPINFOHEADER*, BYTE*);
 
-int minimizing(BYTE*, BYTE*, BITMAPINFOHEADER*, int*);
 
 inline int circular_wrapping(int idx, int max)
 {

@@ -19,7 +19,7 @@ int minimizing(BYTE* old_buffer, BYTE** new_buffer, BITMAPINFOHEADER* infoheader
 		printf("\nInput new height : ");
 		scanf("%d", &newHeight);
 		puts("\n\n");
-	} while (check_size(newWidth, newHeight,infoheader));
+	} while (check_size_4m(&newWidth, &newHeight,infoheader));
 	
 	/*---------------------------------------------*/
 	// 2. 그 비율에 맞춰서, 파일의 크기와 파일의 가로세로 너비를 계산한다.
@@ -58,7 +58,7 @@ int minimizing(BYTE* old_buffer, BYTE** new_buffer, BITMAPINFOHEADER* infoheader
 		return 0;
 	}
 
-	*new_buffer = new_addr; // 힙 영역이어서 지역스코프에서 처리해도 상관이 없다.
+	*new_buffer = new_addr; // 힙 영역이어서 로컬함수 스코프에서 처리해도 상관이 없다.
 
 	/*---------------------------------------------*/
 	// 5. new_buffer의 좌표값을 기준으로 하여, 새로운 크기 스펙과 계산했던 비율을 이용
@@ -83,14 +83,34 @@ int minimizing(BYTE* old_buffer, BYTE** new_buffer, BITMAPINFOHEADER* infoheader
 	return 0;
 }
 
-int check_size(int newWidth, int newHeight, BITMAPINFOHEADER* infoheader)
+int check_size_4m(int* newWidth, int* newHeight, BITMAPINFOHEADER* infoheader)
 {
 	int width_check = 1; int height_check = 1;
+	int remain = 0; 
 
-	if (newWidth < infoheader->width && newWidth > 0)
+	if (*newWidth < infoheader->width && *newWidth > 0)
+	{
+		remain = (*newWidth) % 4;
+
+		if (remain != 0) // 이미지 읽기 최적화를 위해서 너비는 언제나 4의 배수일것!!!
+		{
+			
+
+			if (*newWidth < (infoheader->width) / 2) // 0에 가까울 확률 높음
+			{
+				remain = 4 - remain;
+				*newWidth += remain;
+			}
+
+			else // 이전 너비 크기에 가까울 확률이 높다
+				*newWidth -= remain;
+		}
+
 		width_check = 0;
+	}
+		
 
-	if (newHeight < infoheader->height && newHeight > 0)
+	if (*newHeight < infoheader->height && *newHeight > 0)
 		height_check = 0;
 
 	return width_check || height_check;

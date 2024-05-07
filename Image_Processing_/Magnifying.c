@@ -48,13 +48,11 @@ int magnifying(BYTE* old_buffer, BYTE** new_buffer, BITMAPINFOHEADER* infoheader
 	// 4. 해당 계산값에 맞춰서 new_buffer의 크기를 재할당 해준다.
 	/*---------------------------------------------*/
 
-	*new_buffer = NULL;
-	BYTE* new_addr = realloc(*new_buffer, sizeof(char) * newSize);
+	BYTE* new_addr = realloc(*new_buffer, newSize);
 
 	if (new_addr == NULL)
 	{
 		printf("realloc Error occured!\n");
-		*errCode = 2;
 		return 0;
 	}
 
@@ -64,87 +62,82 @@ int magnifying(BYTE* old_buffer, BYTE** new_buffer, BITMAPINFOHEADER* infoheader
 	// 5. 기존 이미지를 새 이미지에 매핑 해준다.
 	/*---------------------------------------------*/
 
-	// 원본 이미지의 각 픽셀위치에 대해 새 이미지에서의 대응되는 위치를 계산
-	// 계산된 위치의 주변 4개의 픽셀값을 찾기
-	// 이 4개의 픽셀과 가중치를 사용하여 새 픽셀의 밝기값을 계산
-	// 계산된 색상값을 새 이미지 버퍼에 적용
+	double xRatio = (double)oldWidth / (double)newWidth;
+	double yRatio = (double)oldHeight / (double)newHeight; // 새 이미지 좌표를 원본에 투영시키기 위한 확대비 (역방향 사상)
 
-	double xRatio = (double)oldWidth/ (double)newWidth;
-	double yRatio = (double)oldHeight / (double)newHeight;
+	int intX, intY;								// 원본버퍼에 적용될 좌표 매핑용 변수들
+	double realX, realY;						// 원본버퍼에 적용될 좌표 매핑용 변수들
+	double upLeft, upRight, downLeft, downRight;// 원본버퍼에 적용될 좌표 매핑용 변수들
+	BYTE result;
 
-	int intX, intY;
-	double floatX, floatY;
-	BYTE top, bottom;
+	int newX, newY;
+	double xDiff, yDiff;
+	int nextX, nextY;
 
-	BYTE* temp_buffer = (BYTE*)malloc(sizeof(BYTE) * newSize);
+	// 양선형 보간법 시작
 
-	if (temp_buffer == NULL)
+	for (newY = 0; newY < newHeight; newY++)
 	{
-		printf("Cannot memory section allocate!\n");
-		*errCode = 2;
-		return 0;
-	}
+		realY = ((double)newY) * yRatio;
+		intY = (int)floor(realY);
+		yDiff = realY - intY;
 
-	// X축으로의 확장
+		nextY = (intY + 1 > oldHeight - 1) ? intY : intY + 1; // 원본이미지의 높이범위를 벗어나지 않게 처리
 
-	for (int oldY = 0; oldY < oldHeight; oldY++)
-	{
-		for (int newX = 0; newX < newWidth; newX++)
+		for (newX = 0; newX < newWidth; newX++)
 		{
-			floatX = newX * xRatio;
-			intX = (int)floor(floatX);
+			realX = ((double)newX) * xRatio;
+			intX = (int)floor(realX);
+			xDiff = realX - intX;
 
-			if (intX + 1 < oldWidth)
-			{
-				bottom = old_buffer[oldY * oldWidth + intX];
-				top = old_buffer[oldY * oldWidth + intX + 1];
-				temp_buffer[oldY * newWidth + newX] = bottom + (BYTE)(abs(top - bottom) * (floatX - intX));
-			}
+			nextX = (intX + 1 > oldWidth - 1) ? intX : intX + 1; // 원본이미지의 너비범위를 벗어나지 않게 처리
 
-			else
-				temp_buffer[oldY * newWidth + newX] = old_buffer[oldY * oldWidth + intX];
+			upLeft = (double)old_buffer[intY * oldWidth + intX];
+			upRight = (double)old_buffer[intY * oldWidth + nextX];
+			downLeft = (double)old_buffer[nextY * oldWidth + intX];
+			downRight = (double)old_buffer[nextY * oldWidth + nextX];
+			// 사실 확대된 이미지의 좌표를 원본 이미지 좌표에 매핑시킨것이 intY+yDiff , intX+xDiff 이다.
+
+			result = bilinear_interpolation(upLeft, upRight, downLeft, downRight, xDiff, yDiff);
+			// 가중치라는 개념보다는 원본에 투영된 실 좌표와 근접 좌표들끼리의 비율계산 (양선형 보간법!!)
+			(*new_buffer)[newY * newWidth + newX] = result;
 		}
 	}
-
-	// Y축으로의 확장
-
-	for (int newY = 0; newY < newHeight; newY++)
-	{
-		for (int newX = 0; newX < newWidth; newX++)
-		{
-			floatY = newY * yRatio;
-			intY = (int)floor(floatY);
-
-			if (intY + 1 < oldHeight)
-			{
-				bottom = temp_buffer[(intY * newWidth) + newX];
-				top = temp_buffer[(intY + 1) * newWidth + newX];
-				new_addr[newY * newWidth + newX] = bottom + (BYTE)(abs(top - bottom) * (floatY - intY));
-			}
-
-			else
-				new_addr[newY * newWidth + newX] = temp_buffer[intY * newWidth + newX];
-		}
-	}
-
-	free(temp_buffer);
 
 	return 0;
+}
+
+BYTE bilinear_interpolation(double upLeft, double upRight, double downLeft, double downRight, double xDiff, double yDiff)
+{
+	return (BYTE)floor((1 - yDiff) * (downLeft * xDiff + (1 - xDiff) * downRight) + yDiff * (upLeft * xDiff + (1 - xDiff) * upRight));
 }
 
 int check_size_4M(int* newWidth, int* newHeight, BITMAPINFOHEADER* infoheader)
 {
 	int width_check = 1; int height_check = 1;
+	DWORD maximum = 0xffffffff; int remain;
 
+	if (*newWidth > infoheader->width && *newWidth > 0)
+	{
+		remain = (*newWidth) % 4;
+
+		if (remain != 0) // 역시나 4의 배수가 맞는지를 확인해야 한다.
+		{
+			printf("New width is not a multiple of 4!\n");
+			printf("Force to be a multiple of 4!\n\n");
+
+			remain = 4 - remain;
+			*newWidth += remain;
+		}
+
+		width_check = 0;
+	}
+
+	if (*newHeight > infoheader->height && *newHeight > 0)
+		height_check = 0;
+
+	if (!((DWORD)(*newWidth) * (DWORD)(*newHeight) < maximum)) // unsigned int 형의 표현가능한 크기보다 큰가?
+		width_check = 0; height_check = 0;
 
 	return width_check || height_check;
-}
-
-BYTE Bilinear_Interploate(BYTE top_Left, BYTE top_Right, BYTE bottom_Left, BYTE bottom_Right, double xDiff, double yDiff)
-{
-	double valueTOP = top_Left + xDiff*(top_Right - top_Left);
-	double valueBOTTOM = bottom_Left + xDiff*(bottom_Right - bottom_Left);
-	
-	return (BYTE)(valueTOP + yDiff * (valueBOTTOM - valueTOP));
-	// 양선형보간법에 의한 최종 매핑 좌표값 (기존 버퍼)
 }
