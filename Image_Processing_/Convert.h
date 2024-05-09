@@ -2,13 +2,13 @@
 #define CONVERT_H
 
 #define _CRT_SECURE_NO_WARNINGS
+#define _USE_MATH_DEFINES
 
 #include<stdio.h>
 #include<stdlib.h>
 #include<string.h>
 #include<math.h>
 
-#define _USE_MATH_DEFINES
 #define QUIT 15
 
 #pragma pack(push,2) 

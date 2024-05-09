@@ -32,7 +32,7 @@ int convert_BMP(char* oldName, char* newName, unsigned int mode)
 	fread((char*)&infoheader, sizeof(BITMAPINFOHEADER), 1, oldBMP);
 	fread((char*)RGB, sizeof(RGB), 1, oldBMP);
 
-	print_inform(&fileheader, &infoheader, RGB);
+	//print_inform(&fileheader, &infoheader, RGB);
 
 	if(infoheader.BitPerPxl != 8)
 	{
@@ -160,7 +160,7 @@ int mode_select(BYTE** old_buffer, BYTE** new_buffer, BITMAPINFOHEADER* infohead
 		edge_detecting(*old_buffer, *new_buffer, infoheader, errCode);
 		break;
 	case 5:
-		// È¸Àü
+		rotating(*old_buffer, new_buffer, infoheader, fileheader, errCode);
 		break;
 	case 6:
 		minimizing(*old_buffer, new_buffer, infoheader, fileheader, errCode);

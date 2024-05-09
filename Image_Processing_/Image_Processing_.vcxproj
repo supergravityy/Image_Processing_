@@ -142,6 +142,7 @@
     <ClCompile Include="Minimizing.c" />
     <ClCompile Include="Reuseful.c" />
     <ClCompile Include="Revise.c" />
+    <ClCompile Include="rotating.c" />
     <ClCompile Include="Sharpening.c" />
     <ClCompile Include="Stretching.c" />
   </ItemGroup>
