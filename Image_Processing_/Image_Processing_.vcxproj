@@ -127,6 +127,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Binarizating.c" />
     <ClCompile Include="Blurring.c" />
     <ClCompile Include="BMP2TXT.c" />
     <ClCompile Include="Convert.c" />

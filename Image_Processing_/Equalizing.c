@@ -74,20 +74,20 @@ void init_ARR(BYTE* buffer, BITMAPINFOHEADER* infoheader, double* temp_arr, STAS
 
 	for (unsigned int idx = 0; idx < infoheader->ImageSize; idx++)
 	{
-		for (int brit = 0; brit < MAX_BRIT_VAL; brit++)
+		for (int brit = 0; brit <= MAX_BRIT_VAL; brit++)
 		{
 			if (buffer[idx] == brit)
 			{
 				temp_arr[brit]++;
-				data->sum += buffer[idx];
-				data->pow_sum += pow((double)buffer[idx], 2);
+				data->sum += brit; // 모든 픽셀들의 밝기값의 합
+				data->pow_sum += pow(brit, 2);
 				break; // 픽셀의 밝기값을 찾았으니, 뛰어넘어버리자
 			}
 		}
 	}
 
 	data->mean = data->sum / infoheader->ImageSize;
-	data->variance = ((double)data->pow_sum / (double)infoheader->ImageSize) - pow(data->mean, 2);
+	data->variance = (data->pow_sum / infoheader->ImageSize) - pow(data->mean, 2);
 	// 히스토그램의 평균과 분산을 구해서 보기 위함
 }
 
@@ -109,7 +109,7 @@ void normalize_CDF(BYTE* old_buffer, BITMAPINFOHEADER* infoheader, double* temp_
 		printf("(%d) %d, ", brit, temp);
 		temp_arr[brit] = temp; // 다시 기존의 히스토그램 빈도수로 넣어놓기
 	}
-	// 이제 히스토그램 평활화가 완료되었다.
+	// 이제 히스토그램 평활화가 거의 완료되었다.
 
 	printf("\n\n");
 }

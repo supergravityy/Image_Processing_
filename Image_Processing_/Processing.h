@@ -8,6 +8,7 @@
 #define ANG2RAD(angle) ((M_PI * (double)(angle)) / 180.0)
 
 #define MAX_BRIT_VAL 255
+#define PXL_BRIT_NUM 256
 
 int mem_overrun_cnt;
 
@@ -45,6 +46,7 @@ int finding_holes(BYTE * buffer, BITMAPINFOHEADER*);
 // 4. 통계학적 처리 
 int histo_equalizing(BYTE*, BYTE*, BITMAPINFOHEADER*, int*);
 int histo_streching(BYTE*, BYTE*, BITMAPINFOHEADER*, int*);
+int binarizating(BYTE*, BYTE*, BITMAPINFOHEADER*, int*);
 
 // 4-1. 통계처리에 필요한 구조체
 typedef struct
@@ -60,6 +62,11 @@ void init_ARR(BYTE*, BITMAPINFOHEADER*, double*, STASTICS*);
 void normalize_CDF(BYTE*, BITMAPINFOHEADER*, double*, STASTICS*);
 void write_hist(double*);
 void find_min_max(BYTE*, BITMAPINFOHEADER*, BYTE*);
+void init_Stastics(STASTICS* );
+double within_class_Var(double*, int, int, int, int, STASTICS*);
+int find_valid_Val(char, double*);
+int Otsu_final(BYTE*, BYTE*, BYTE, BITMAPINFOHEADER*);
+
 
 
 // 5. 루프마다 호출되는 함수는 성능을 위해 inline으로 작성됨

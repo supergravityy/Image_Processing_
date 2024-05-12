@@ -102,3 +102,4 @@ BYTE col_cal(BYTE* temp_buffer, double* kernel, int h, int w, int width, int hei
 
 	return (BYTE)round(sum);
 }
+

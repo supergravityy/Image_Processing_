@@ -178,7 +178,7 @@ int mode_select(BYTE** old_buffer, BYTE** new_buffer, BITMAPINFOHEADER* infohead
 		embossing(*old_buffer, *new_buffer, infoheader, errCode);
 		break;
 	case 11:
-		// ¿Ã¡¯»≠
+		binarizating(*old_buffer, *new_buffer, infoheader, errCode);
 		break;
 	case 12:
 		inverting(*old_buffer, *new_buffer, infoheader, errCode);
