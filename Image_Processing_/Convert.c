@@ -17,6 +17,7 @@ int convert_BMP(char* oldName, char* newName, unsigned int mode)
 	BITMAPINFOHEADER infoheader;
 	BITMAPColorPalette RGB[256];
 
+	/* ".\\output\\" + newName; */ //파일경로 쓰기
 
 	oldBMP = fopen(oldName, "rb");
 	newBMP = fopen(newName, "wb");
@@ -68,7 +69,7 @@ int convert_BMP(char* oldName, char* newName, unsigned int mode)
 		if (result == 3)
 		{
 			goto ignore;
-			printf("Image Processing has been completed!\nBut it would be incorrect! \n");
+			printf("\n\nImage Processing has been completed!\nBut it would be incorrect! \n");
 		}
 			
 		printf("Processing Error Occured!\n\n"); // 에러코드는 해당 함수에서 바뀐다.

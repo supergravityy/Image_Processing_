@@ -26,9 +26,14 @@ int mid_filtering(BYTE*, BYTE*, BITMAPINFOHEADER*, int*);
 int embossing(BYTE*, BYTE*, BITMAPINFOHEADER*, int*);
 
 // 2-1. 화소영역 처리에 필요한 행렬처리 자잘이 함수
-BYTE row_cal(BYTE*, double*, int, int, int, int);
-BYTE col_cal(BYTE*, double*, int, int, int, int);
+BYTE row_cal(BYTE*, double*, int, int, BITMAPINFOHEADER*, int);
+BYTE col_cal(BYTE*, double*, int, int, BITMAPINFOHEADER*, int);
+BYTE regular_cal(BYTE*, double*, int, int, BITMAPINFOHEADER*, int);
 BYTE sorting(BYTE*, int, int, int, int);
+int check_symmetry(double*, int);
+void flipping(double*, int);
+double* gen_AVG_kernel(int);
+double* gen_GAU_kernel(int);
 
 // 3. 기하학적 처리
 int minimizing(BYTE*, BYTE**, BITMAPINFOHEADER*, BITMAPFILEHEADER*, int*);
