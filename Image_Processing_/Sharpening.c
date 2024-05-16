@@ -3,22 +3,161 @@
 int sharpening(BYTE* old_buffer, BYTE* new_buffer, BITMAPINFOHEADER* infoheader, int* errCode)
 {
 	/*--------------------------------*/
-	// 1. 샤프닝은 블러링 처리와 다르게 분리가능한 커널이 아니다
-	// 샤프닝을 위한 커널을 만들자
+	// 1. 원하는 커널 선택
 	/*--------------------------------*/
 
-	double kernel[9] = { -1,-1,-1,-1,9,-1,-1,-1,-1 };
-	normalize_filter(kernel, 3, 1);
+	int option;
+
+	while (1)
+	{
+		printf("The filter size is fixed at 3X3\n"); // 어차피 커널이 더 커져도 거기서 거기이다.
+		printf("1. Fully high-frequency pass filter \n");
+		printf("2. High-frequency pass filter\n");
+		printf("3. Fully high-frequency filter with fractional values\n");
+
+		printf("\nChoose your kernel! : ");
+
+		scanf("%d", &option);
+		putchar('\n');
+
+		if (option > 0 && option < 4)
+			break;
+	}
 
 	/*--------------------------------*/
-	// 2. 샤프닝 계산
+	// 2. 원하는 커널을 생성
 	/*--------------------------------*/
 
-	printf("\nNow sharpening calculation is start!\n");
+	double* kernel = NULL;
 
-	for (int h = 0; h < infoheader->height; h++)
-		for (int w = 0; w < infoheader->width; w++)
-			new_buffer[h * infoheader->width + w] = sharp_cal(old_buffer, kernel, h, w, infoheader->width, infoheader->height);
+	switch (option)
+	{
+	case 1:
+		kernel = gen_fHF_kernel();
+		break;
 
+	case 2:
+		kernel = gen_HF_kernel();
+		break;
+	case 3:
+		kernel = gen_fHFfs_kernel();
+		break;
+	}
+
+	if (kernel == NULL)
+	{
+		printf("memory allocation failed! at making kernel process!\n");
+		*errCode = 2;
+		goto release;
+	}
+
+	/*--------------------------------*/
+	// 3. 커널 정규화 & 필터의 합이 유효한지 확인
+	/*--------------------------------*/
+
+	// 샤프닝 필터는 총합이 1이다 -> 화소들의 전체적인 밝기는 유지하되, 디테일들을 살린다
+
+	normalize_filter(kernel, SHARP_FLT_SIZE/3, 1);
+
+	/*--------------------------------*/
+	// 5. 커널들은 무조건 y축 & x축 대칭이긴 하지만, 분리가 가능하지 않다
+	/*--------------------------------*/
+
+	int result = 0;
+
+	int X, Y;
+	int Width = infoheader->width;
+	int Height = infoheader->height;
+
+	for (Y = 0; Y < Height; Y++)
+	{
+		for (X = 0; X < Width; X++)
+		{
+			new_buffer[Y * Width + X] = regular_cal(old_buffer,kernel,X,Y,infoheader, SHARP_FLT_SIZE / 3);
+		}
+	}
+
+	/*--------------------------------*/
+	// 6. 정리하기
+	/*--------------------------------*/
+
+release:
+
+	if (kernel != NULL); free(kernel);
 	return 0;
+}
+
+double* gen_fHF_kernel()
+{
+	double* fHF_kernel = (double*)malloc(sizeof(double) * SHARP_FLT_SIZE);
+	
+	double temp[SHARP_FLT_SIZE] = { -1.,-1.,-1.,-1.,9.,-1.,-1.,-1.,-1. };
+
+	for (int i = 0; i < SHARP_FLT_SIZE; i++) 
+		fHF_kernel[i] = temp[i];
+	
+
+	// 가장 안정적인 커널이다.
+
+	return fHF_kernel;
+}
+
+double* gen_HF_kernel()
+{
+	double* HF_kernel = (double*)malloc(sizeof(double) * SHARP_FLT_SIZE);
+	
+	double temp[SHARP_FLT_SIZE] = { 0.,-1.,0.,-1.,5.,-1.,0.,-1.,0. };
+
+	for (int i = 0; i < SHARP_FLT_SIZE; i++) 
+		HF_kernel[i] = temp[i];
+	
+
+	// 가장 안정적인 커널이다.
+
+	return HF_kernel;
+}
+
+double* gen_fHFfs_kernel()
+{
+	/*--------------------------------*/
+	// 4. 유명한 샤프닝 커널들을 몇가지 가져와봤다. 고정 커널
+	/*--------------------------------*/
+
+	double* fHFfs_kernel = (double*)malloc(sizeof(double) * SHARP_FLT_SIZE);
+
+	double temp[SHARP_FLT_SIZE] = { -1. / 3.,1. / 3.,-1. / 3.,-1. / 3.,8. / 3.,-1. / 3. ,-1. / 3. ,1. / 3. ,-1. / 3. };
+
+	for (int i = 0; i < SHARP_FLT_SIZE; i++)
+		fHFfs_kernel[i] = temp[i];
+
+	return fHFfs_kernel;
+}
+
+void normalize_filter(double* kernal, int Sidesize, int coeff)
+{
+	int scailing = (int)pow(coeff, 2);
+	double sum = 0.0;
+
+	for (int i = 0; i < Sidesize; i++)
+	{
+		for (int j = 0; j < Sidesize; j++)
+		{
+			kernal[i * Sidesize + j] /= scailing;
+			sum += kernal[i * Sidesize + j];
+		}
+	}
+
+	// 필터의 계수들이 제대로 작성되었는지 확인
+
+	printf("\nFilter coefficient \n\n");
+
+	for (int i = 0; i < Sidesize; i++)
+		for (int j = 0; j < Sidesize; j++)
+			printf("%lf\t", *(kernal + i * Sidesize + j));
+
+	if (sum == 1)
+		printf("\nThe sum of the kernels is 1!\n\n");
+
+	else
+		printf("\nThe sum of the kernels is NOT 1!\n\n");
 }

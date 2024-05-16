@@ -3,14 +3,12 @@
 
 #include "Convert.h"
 
-
 #define swap(type,x,y) do{ type t=(x); (x)=(y); (y)=t;}while(0)
 #define ANG2RAD(angle) ((M_PI * (double)(angle)) / 180.0)
 
 #define MAX_BRIT_VAL 255
 #define PXL_BRIT_NUM 256
-
-int mem_overrun_cnt;
+#define SHARP_FLT_SIZE 9
 
 // 0. 테스트용
 void duplicate(BYTE*, BYTE*, BITMAPINFOHEADER*, int*);
@@ -34,6 +32,10 @@ int check_symmetry(double*, int);
 void flipping(double*, int);
 double* gen_AVG_kernel(int);
 double* gen_GAU_kernel(int);
+double* gen_fHF_kernel();
+double* gen_HF_kernel();
+double* gen_fHFfs_kernel();
+void normalize_filter(double*, int, int);
 
 // 3. 기하학적 처리
 int minimizing(BYTE*, BYTE**, BITMAPINFOHEADER*, BITMAPFILEHEADER*, int*);
@@ -46,7 +48,7 @@ int check_size_4M(int*, int*, BITMAPINFOHEADER*);
 int move_RAWdata(BYTE*, BYTE*, BITMAPINFOHEADER*, BITMAPFILEHEADER*, int, int, int);
 int isInteger(double);
 int rotate_RAWdata(BYTE*, BYTE*, BITMAPINFOHEADER*, double);
-int finding_holes(BYTE * buffer, BITMAPINFOHEADER*);
+int finding_holes(BYTE*, BITMAPINFOHEADER*);
 
 // 4. 통계학적 처리 
 int histo_equalizing(BYTE*, BYTE*, BITMAPINFOHEADER*, int*);
@@ -82,31 +84,6 @@ inline int circular_wrapping(int idx, int max)
 	return idx % max;
 }
 
-inline void normalize_filter(double* kernal, int size, int coeff)
-{
-	int scailing = (int)pow(coeff, 2);
-	double sum = 0.0;
-
-	for (int i = 0; i < size; i++)
-	{
-		for (int j = 0; j < size; j++)
-		{
-			kernal[i * size + j] /= scailing;
-			sum += kernal[i * size + j];
-		}
-	}
-
-	// 필터의 계수들이 제대로 작성되었는지 확인
-
-	printf("filter coefficient :");
-
-	for (int i = 0; i < size; i++)
-		for (int j = 0; j < size; j++)
-			printf(" %f", *(kernal + i * size + j));
-
-	printf("\nsum = %f\n", sum);
-}
-
 inline void draw_bar(int Num)
 {
 	int quotient = Num / 10;
@@ -118,7 +95,7 @@ inline void draw_bar(int Num)
 	printf("\n");
 }
 
-inline int clipping(int pxl)
+inline BYTE clipping(int pxl)
 {
 	if (pxl > 255)
 		pxl = 255;
@@ -126,31 +103,6 @@ inline int clipping(int pxl)
 		pxl = 0;
 
 	return (BYTE)(pxl);
-}
-
-inline BYTE sharp_cal(BYTE* old_buffer, double* kernel, int h, int w, int width, int height)
-{
-	double sum = 0;
-	int wrapped_i = 0; int wrapped_j = 0;
-
-	for (int i = h - 1; i < h + 2; i++)
-	{
-		wrapped_i = circular_wrapping(i, height);
-
-		for (int j = w - 1; j < w + 2; j++)
-		{
-			wrapped_j = circular_wrapping(j, width);
-			sum += (double)old_buffer[wrapped_i * width + wrapped_j] * kernel[(i - h + 1) * 3 + (j - w + 1)];
-		}
-	}
-
-	/*--------------------------------*/
-	// 3. 샤프닝은 필연적으로 필터의 구조때문에 밝기값에 걸칠수도 있다 -> 클리핑이 필요
-	/*--------------------------------*/
-
-	int result = (int)(sum + 0.5);
-
-	return (BYTE)clipping(result);
 }
 
 inline BYTE bilinear_interpolation(double upLeft, double upRight, double downLeft, double downRight, double xDiff, double yDiff)

@@ -42,7 +42,7 @@ int blurring(BYTE* old_buffer, BYTE* new_buffer, BITMAPINFOHEADER* infoheader, i
 		if (scanf("%d", &formula_seed) != 1)
 		{
 			// 소수같은 것을 입력했을경우, 입력 버퍼를 비우고 다시 시도
-			printf("Invalid input. Please enter a valid integer.\n");
+			printf("Invalid input\n");
 			while (getchar() != '\n'); // fflush(stdin) 을 해도 무한루프가 계속되기에 어쩔수 없이 전부 비워준다.
 			continue;
 		}
@@ -117,6 +117,7 @@ int blurring(BYTE* old_buffer, BYTE* new_buffer, BITMAPINFOHEADER* infoheader, i
 		printf("Beware that memory overruns can occur during computation! \n\n");
 		// 간혹가다가 총합이 1이 안될때도 있다. 이는 부동소수점 때문에 발생한 것이고, 약간의 전체적으로 픽셀값이 어두워질 수도 있지만
 		// 우리눈으로보기엔 별로 티 안난다.
+		*errcCode = 3;
 	}
 
 	/*------------------------------------*/
@@ -127,7 +128,7 @@ int blurring(BYTE* old_buffer, BYTE* new_buffer, BITMAPINFOHEADER* infoheader, i
 	int result = 0;
 
 	if (Symmetric = check_symmetry(kernel, kernel_size)) 
-	// y축과 x축에 대칭이면, 분리가능한 커널로 볼 수있다.
+	// y축과 x축에 대칭이고, K = Kx * Ky ^ (T) 의 형태로 쪼개지면 분리가능한 커널이다.
 	// 또한, 2차원 영역을 컨볼루션 하게 되면, y축과 x축에 대칭이어야 하기에 이또한 무시가 가능하다
 	{
 		printf("\n\nThe kernel is symmetric about both x and y axes\n");
@@ -141,6 +142,7 @@ int blurring(BYTE* old_buffer, BYTE* new_buffer, BITMAPINFOHEADER* infoheader, i
 		if (temp_buffer == NULL)
 		{
 			printf("Memory allocation Error! at generatimg tempBuffer\n");
+			*errcCode = 2;
 			goto release;
 		}
 
@@ -149,6 +151,7 @@ int blurring(BYTE* old_buffer, BYTE* new_buffer, BITMAPINFOHEADER* infoheader, i
 		if (vector_buffer == NULL)
 		{
 			printf("Memory allocation Error! at generatimg vectorBuffer\n");
+			*errcCode = 2;
 			goto release;
 		}
 
@@ -189,7 +192,8 @@ int blurring(BYTE* old_buffer, BYTE* new_buffer, BITMAPINFOHEADER* infoheader, i
 		double N = kernel[0];
 		for (idx = 0; idx < Sizeside; idx++) // 커널의 행벡터(x축)
 		{
-			vector_buffer[idx] = kernel[idx * Sizeside] / N; // 정규화
+			vector_buffer[idx] = kernel[idx * Sizeside] / N; 
+			// 위의 분리가능한 커널을 쪼개서 다시 붙이면, N값이 제곱이 되서 나오기에 정규화
 			//printf("%lf ", vector_buffer[idx]);
 		}
 
@@ -229,7 +233,7 @@ release:
 	if (kernel != NULL) free(kernel);
 	if (temp_buffer != NULL) free(temp_buffer);
 	if (vector_buffer != NULL) free(vector_buffer);
-	return;
+	return 0;
 }
 
 void flipping(double* kernel, int Sizeside)
@@ -310,6 +314,8 @@ double* gen_GAU_kernel(int size)
 	// 5. 2차원 가우시안 분포 필터 만들기
 	/*------------------------------------*/
 
+	// 왜도와 첨도는 상관안한다
+	// 평행이동도 X
 	int Radius = side / 2;
 	double sum = 0;
 
@@ -416,11 +422,11 @@ BYTE regular_cal(BYTE* old_buffer, double* kernel, int curX, int curY, BITMAPINF
 	int Radius = Sizeside / 2;
 	int kernel_idx;
 
-	for (int i = curY - Radius; i <= curY + Radius; i++)
+	for (int i = curY - Radius; i < curY + Radius+1; i++)
 	{
 		wrapped_i = circular_wrapping(i, Height);
 
-		for (int j = curX - Radius; j <= curX + Radius; j++)
+		for (int j = curX - Radius; j < curX + Radius+1; j++)
 		{
 			wrapped_j = circular_wrapping(j, Width);
 			kernel_idx = (i - curY + Radius) * Sizeside + (j - curX + Radius);
@@ -428,5 +434,17 @@ BYTE regular_cal(BYTE* old_buffer, double* kernel, int curX, int curY, BITMAPINF
 		}
 	}
 
-	return (BYTE)round(sum);
+	int result = (int)round(sum);
+
+	return (BYTE)clipping(result); 
+	/*--------------------------------
+	 순서가 매우 중요하다.
+
+	1. 먼저 반올림 처리하고 byte 형태로 만들어서 리턴 후, 콜러가 클리핑을 하게한다
+	VS
+	2. 먼저 반올림 처리하고, 콜리가 클리핑을 한후, byte 형태로 만들어서 리턴한다.
+
+
+	전자는 메모리 오버런의 영향이 있을 수도 있기에 안쓰는게 좋다.
+	-----------------------------------*/
 }

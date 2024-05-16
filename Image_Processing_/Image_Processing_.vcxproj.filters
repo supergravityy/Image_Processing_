@@ -60,7 +60,7 @@
     <ClCompile Include="Magnifying.c">
       <Filter>소스 파일</Filter>
     </ClCompile>
-    <ClCompile Include="rotating.c">
+    <ClCompile Include="Rotating.c">
       <Filter>소스 파일</Filter>
     </ClCompile>
     <ClCompile Include="Binarizating.c">
