@@ -84,8 +84,6 @@ ignore:
 	fwrite((char*)RGB, sizeof(RGB), 1, newBMP);
 	fwrite(new_buffer, infoheader.ImageSize, 1, newBMP);
 
-	
-
 	/*---------------------------------------*/
 	/* 4. 정리하기 + 뷰어 실행 */
 	/*---------------------------------------*/

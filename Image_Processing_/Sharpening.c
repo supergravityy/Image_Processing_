@@ -57,7 +57,7 @@ int sharpening(BYTE* old_buffer, BYTE* new_buffer, BITMAPINFOHEADER* infoheader,
 
 	// 샤프닝 필터는 총합이 1이다 -> 화소들의 전체적인 밝기는 유지하되, 디테일들을 살린다
 
-	normalize_filter(kernel, SHARP_FLT_SIZE/3, 1);
+	normalize_filter(kernel, KERNEL33/3, 1);
 
 	/*--------------------------------*/
 	// 5. 커널들은 무조건 y축 & x축 대칭이긴 하지만, 분리가 가능하지 않다
@@ -73,7 +73,7 @@ int sharpening(BYTE* old_buffer, BYTE* new_buffer, BITMAPINFOHEADER* infoheader,
 	{
 		for (X = 0; X < Width; X++)
 		{
-			new_buffer[Y * Width + X] = regular_cal(old_buffer,kernel,X,Y,infoheader, SHARP_FLT_SIZE / 3);
+			new_buffer[Y * Width + X] = regular_cal(old_buffer,kernel,X,Y,infoheader, KERNEL33 / 3);
 		}
 	}
 
@@ -89,11 +89,11 @@ release:
 
 double* gen_fHF_kernel()
 {
-	double* fHF_kernel = (double*)malloc(sizeof(double) * SHARP_FLT_SIZE);
+	double* fHF_kernel = (double*)malloc(sizeof(double) * KERNEL33);
 	
-	double temp[SHARP_FLT_SIZE] = { -1.,-1.,-1.,-1.,9.,-1.,-1.,-1.,-1. };
+	double temp[KERNEL33] = { -1.,-1.,-1.,-1.,9.,-1.,-1.,-1.,-1. };
 
-	for (int i = 0; i < SHARP_FLT_SIZE; i++) 
+	for (int i = 0; i < KERNEL33; i++) 
 		fHF_kernel[i] = temp[i];
 	
 
@@ -104,11 +104,11 @@ double* gen_fHF_kernel()
 
 double* gen_HF_kernel()
 {
-	double* HF_kernel = (double*)malloc(sizeof(double) * SHARP_FLT_SIZE);
+	double* HF_kernel = (double*)malloc(sizeof(double) * KERNEL33);
 	
-	double temp[SHARP_FLT_SIZE] = { 0.,-1.,0.,-1.,5.,-1.,0.,-1.,0. };
+	double temp[KERNEL33] = { 0.,-1.,0.,-1.,5.,-1.,0.,-1.,0. };
 
-	for (int i = 0; i < SHARP_FLT_SIZE; i++) 
+	for (int i = 0; i < KERNEL33; i++) 
 		HF_kernel[i] = temp[i];
 	
 
@@ -123,11 +123,11 @@ double* gen_fHFfs_kernel()
 	// 4. 유명한 샤프닝 커널들을 몇가지 가져와봤다. 고정 커널
 	/*--------------------------------*/
 
-	double* fHFfs_kernel = (double*)malloc(sizeof(double) * SHARP_FLT_SIZE);
+	double* fHFfs_kernel = (double*)malloc(sizeof(double) * KERNEL33);
 
-	double temp[SHARP_FLT_SIZE] = { -1. / 3.,1. / 3.,-1. / 3.,-1. / 3.,8. / 3.,-1. / 3. ,-1. / 3. ,1. / 3. ,-1. / 3. };
+	double temp[KERNEL33] = { -1. / 3.,1. / 3.,-1. / 3.,-1. / 3.,8. / 3.,-1. / 3. ,-1. / 3. ,1. / 3. ,-1. / 3. };
 
-	for (int i = 0; i < SHARP_FLT_SIZE; i++)
+	for (int i = 0; i < KERNEL33; i++)
 		fHFfs_kernel[i] = temp[i];
 
 	return fHFfs_kernel;

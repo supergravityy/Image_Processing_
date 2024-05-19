@@ -8,7 +8,8 @@
 
 #define MAX_BRIT_VAL 255
 #define PXL_BRIT_NUM 256
-#define SHARP_FLT_SIZE 9
+#define KERNEL33 9
+#define KERNEL77 49
 
 // 0. 테스트용
 void duplicate(BYTE*, BYTE*, BITMAPINFOHEADER*, int*);
@@ -29,12 +30,20 @@ BYTE col_cal(BYTE*, double*, int, int, BITMAPINFOHEADER*, int);
 BYTE regular_cal(BYTE*, double*, int, int, BITMAPINFOHEADER*, int);
 BYTE sorting(BYTE*, int, int, int, int);
 int check_symmetry(double*, int);
+int is_seperatable(double*, int);
 void flipping(double*, int);
 double* gen_AVG_kernel(int);
 double* gen_GAU_kernel(int);
 double* gen_fHF_kernel();
 double* gen_HF_kernel();
 double* gen_fHFfs_kernel();
+double* gen_Roberts_kernel();
+double* gen_Prewitt_kernel();
+double* gen_Sobel_kernel();
+double* gen_2nd_Laplacian_kernel_1();
+double* gen_2nd_Laplacian_kernel_2();
+double* gen_LoG(int);
+double* gen_DoG(int);
 void normalize_filter(double*, int, int);
 
 // 3. 기하학적 처리

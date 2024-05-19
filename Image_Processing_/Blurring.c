@@ -117,19 +117,18 @@ int blurring(BYTE* old_buffer, BYTE* new_buffer, BITMAPINFOHEADER* infoheader, i
 		printf("Beware that memory overruns can occur during computation! \n\n");
 		// 간혹가다가 총합이 1이 안될때도 있다. 이는 부동소수점 때문에 발생한 것이고, 약간의 전체적으로 픽셀값이 어두워질 수도 있지만
 		// 우리눈으로보기엔 별로 티 안난다.
-		*errcCode = 3;
 	}
 
 	/*------------------------------------*/
 	// 7. 행렬이 y축과 x축에 대칭인지 확인후 드디어 블러링 연산
 	/*------------------------------------*/
 
-	int Symmetric = 0;
+
 	int result = 0;
 
-	if (Symmetric = check_symmetry(kernel, kernel_size)) 
-	// y축과 x축에 대칭이고, K = Kx * Ky ^ (T) 의 형태로 쪼개지면 분리가능한 커널이다.
-	// 또한, 2차원 영역을 컨볼루션 하게 되면, y축과 x축에 대칭이어야 하기에 이또한 무시가 가능하다
+	if (check_symmetry(kernel, kernel_size) && is_seperatable(kernel,Sizeside)) 
+	// K = Kx * Ky ^ (T) 의 형태로 쪼개지면 분리가능한 커널이다.
+	// 대칭이며, rank = 1 인 행렬이어야 한다. 이를 검사하기 위한 조건
 	{
 		printf("\n\nThe kernel is symmetric about both x and y axes\n");
 		printf("As a result, your kernel is a detachable kernel!\n");
@@ -194,7 +193,7 @@ int blurring(BYTE* old_buffer, BYTE* new_buffer, BITMAPINFOHEADER* infoheader, i
 		{
 			vector_buffer[idx] = kernel[idx * Sizeside] / N; 
 			// 위의 분리가능한 커널을 쪼개서 다시 붙이면, N값이 제곱이 되서 나오기에 정규화
-			//printf("%lf ", vector_buffer[idx]);
+			printf("%lf ", vector_buffer[idx]);
 		}
 
 		printf("\nNow col vec calculation is start!\n"); // 그 후에 세로로 행렬계산
@@ -292,17 +291,27 @@ double* gen_GAU_kernel(int size)
 	printf("To create a custom Gaussian kernel, you need to enter an additional sigma value!\n");
 
 	double sigma = 1;
+	double Limit_sigma = ((double)side)/6.;
+	// Z분포의 신뢰구간을 생각하면, 대부분의 y값이 표준편차와 근접한 곳에 몰려있다. 그래서, 오차를 줄이기 위해 99.7%의 법칙을 위반하면 안된다.
 
 	while (1)
 	{
 		printf("\n\nThe default value for sigma is 1!\n");
-		printf("If you raise the sigma value, the smoothing ability becomes stronger.\n");
-		printf("And if you lower it, the smoothing becomes weaker\n");
-		printf("Input your sigma Value (sigma > 0) : ");
+		printf("If you raise the sigma value, the smoothing ability becomes stronger. And if you lower it, the smoothing becomes weaker\n");
+		printf("The condition for entering the value\n");
+		printf("1. Please enter a positive number\n ");
+		printf("2. Because of the 99.7%% law of the normal distribution, the sigma must be less than or equal to \'sideSize(%d)/6\' = %lf : \n",side,Limit_sigma);
 
-		if (scanf("%lf", &sigma) != 1 || sigma <= 0)
+		/*-----------------------------
+		* 여기서 문제가 발생! 먼저 커널 크기를 입력받고, 법칙에 의해 '변의크기 >= 표준편차 * 3 * 2' 이어야 한다
+		* 나는 커널의 크기를 먼저 입력받았기에, 표준편차를 조건에 맞춰서 받아야 한다.
+		* 변의크기/6 >= 표준편차인데, 이런 조건에 맞춰서 받으면, 총합이 1이 안나올 뿐더러
+		* 블러링 연산이 정상적으로 되지않고 이진화가 된것처럼 나온다 -> 이것은 커널과 밀접한 문제이다.
+		-------------------------------*/
+
+		if (scanf("%lf", &sigma) != 1 || (sigma <= 0) /*/ || (sigma > Limit_sigma)*/)
 		{
-			printf("Invalid sigma value. Please enter a positive number.\n");
+			printf("Invalid sigma value. Please enter valid number.\n");
 			while (getchar() != '\n'); // fflush(stdin) 으로 안되서 하나하나 비워줘야한다;;;;
 			continue;
 		}
@@ -336,6 +345,8 @@ double* gen_GAU_kernel(int size)
 
 	for (idx = 0; idx < size; idx++)
 		GAU_kernel[idx] /= sum;
+
+	printf("Sum of kernel element : %lf\n", sum);
 
 	// 가우시안 필터 완성!
 
@@ -447,4 +458,79 @@ BYTE regular_cal(BYTE* old_buffer, double* kernel, int curX, int curY, BITMAPINF
 
 	전자는 메모리 오버런의 영향이 있을 수도 있기에 안쓰는게 좋다.
 	-----------------------------------*/
+}
+
+int is_seperatable(double* kernel, int Sizeside)
+{
+	double threshold = 1e-7; // 문턱값 (0.0000001)
+	int X, Y;
+
+	/*-------------------------------------*/
+	// 조건 1 : 첫번째 행, 열 벡터에 0이 있으면 안됨
+	// 커널의 첫번째 원소는 0이 아닐것. 밑의 연산에서 0으로 나눌수도 있음
+	/*-------------------------------------*/
+
+	if (kernel[0] == 0) 
+		return 0;
+
+	// 선형종속적이라면, 모든 벡터의 원소들이 첫 벡터의 원소들과 똑같은 비율을 유지
+
+	int first_RowVec_zero = 0;
+	int first_ColVec_zero = 0;
+
+	for (int X = 1; X < Sizeside; X++)
+	{
+		if (fabs(kernel[X]) < threshold) // 너무 작은값이면 나눗셈 연산에 영향 
+		{
+			first_RowVec_zero++;
+			break;
+		}
+	}
+
+	for (int Y = 1; Y < Sizeside; Y++) 
+	{
+		if (fabs(kernel[Y * Sizeside]) > threshold)
+		{
+			first_ColVec_zero ++;
+			break;
+		}
+	}
+
+	if (first_RowVec_zero || first_ColVec_zero) // 하나라도 0있는 벡터면 아웃
+		return 0;
+
+
+	/*-------------------------------------*/
+	// 조건 2 : 행렬의 rank 값이 1인것으로 가정 (행렬의 선형독립적인 행,열 벡터의 갯수)
+	// 이는 첫번째를 제외한 모든 행과 열이 첫번째에 선형 종속적이어야 함
+	/*-------------------------------------*/
+
+	// 첫 번째 행을 기준으로 행렬의 모든 행이 배수 관계인지 확인
+	for (int Y = 1; Y < Sizeside; Y++) 
+	{
+		double row_ratio = kernel[Y * Sizeside] / kernel[0]; // 첫행과 배수관계에 있다고 가정
+
+		for (int X = 0; X < Sizeside; X++)
+
+			// kernel[X]는 첫번째 행의 원소를 의미
+			// 대상 행의 원소들과 첫 행의 원소를 하나씩 빼가며, 차이를 확인
+
+			if (fabs(kernel[Y * Sizeside + X] - row_ratio * kernel[X]) > threshold) 
+				return 0;
+	}
+
+	// 첫 번째 열을 기준으로 행렬의 모든 열이 배수 관계인지 확인
+	for (int X = 1; X < Sizeside; X++) 
+	{
+		double col_ratio = kernel[X] / kernel[0]; // 첫열과 배수관계에 있다고 가정
+
+		for (int Y = 0; Y < Sizeside; Y++) 
+
+			// kernel[Y * Sizeside]는 첫번째 열의 원소를 의미
+
+			if (fabs(kernel[Y * Sizeside + X] - col_ratio * kernel[Y * Sizeside]) > threshold) 
+				return 0;
+	}
+
+	return 1; // 모두 통과시, 분리가능한 커널
 }

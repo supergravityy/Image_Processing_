@@ -21,7 +21,7 @@ int embossing(BYTE* old_buffer, BYTE* new_buffer, BITMAPINFOHEADER* infoheader, 
 	{
 		for (int w = 0; w < infoheader->width; w++)
 		{
-			temp = 128 + sharp_cal(old_buffer, kernel, h, w, infoheader->width, infoheader->height);
+			temp = 128 + regular_cal(old_buffer, kernel, w, h, infoheader, 3);
 			new_buffer[h * infoheader->width + w] = clipping(temp);
 		}
 	}
