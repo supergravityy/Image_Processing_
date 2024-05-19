@@ -3,10 +3,42 @@
 int embossing(BYTE* old_buffer, BYTE* new_buffer, BITMAPINFOHEADER* infoheader, int* errCode)
 {
 	/*------------------------------*/
-	// 1. 엠보싱 효과 역시 분리가능한 커널이 될 수 없다
+	// 1. 원하는 커널 입력받기
 	/*------------------------------*/
 
-	double kernel[9] = { -1,-1,0,0,0,0,0,1,1 };
+	int option;
+
+	while (1)
+	{
+		printf("Choose the filter you want\n");
+		printf("1. From top left to bottom right \n");
+		printf("2. From top right to bottom left\n");
+
+		printf("\nChoose your kernel! : ");
+
+		scanf("%d", &option);
+		putchar('\n');
+
+		if (option > 0 && option < 3)
+			break;
+	}
+
+	double kernel[9];
+
+	if (option == 1)
+	{
+		double temp[9] = { -1,-1,0,0,0,0,0,1,1 };
+		for (int i = 0; i < 9; i++) 
+			kernel[i] = temp[i];
+	}
+		
+	else
+	{
+		double temp[9] = { 0,-1,-1,0,0,0,1,1,0 };
+		for (int i = 0; i < 9; i++)
+			kernel[i] = temp[i];
+	}
+		
 	// 픽셀의 대각선 방향으로 차이를 계산한다, 역시 총합은 0
 	// 추가적인 픽셀처리와 함께라면 대각선 방향으로 빛이 드는듯한 효과를 준다
 	

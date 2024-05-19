@@ -108,7 +108,7 @@ int edge_detecting(BYTE* old_buffer, BYTE* new_buffer, BITMAPINFOHEADER* infohea
 	}
 
 	/*---------------------------*/
-	// 3. 정리
+	// 4. 정리
 	/*---------------------------*/
 
 release:
