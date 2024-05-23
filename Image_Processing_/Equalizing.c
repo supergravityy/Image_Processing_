@@ -28,9 +28,9 @@ int histo_equalizing(BYTE* old_buffer, BYTE* new_buffer, BITMAPINFOHEADER* infoh
 
 	write_hist(TEMP_ARR);
 
-	printf("\n\n\n");
-	for (int brit = 0; brit < MAX_BRIT_VAL; brit++)
-		printf("(%d) %d   ", brit, (int)TEMP_ARR[brit]);
+	//printf("\n\n\n");
+	/*for (int brit = 0; brit < MAX_BRIT_VAL; brit++)
+		printf("(%d) %d   ", brit, (int)TEMP_ARR[brit]);*/
 
 	/*---------------------------------------*/
 	// 3. 히스토그램의 모든 빈도수를 CDF형태로 만든다
@@ -55,9 +55,9 @@ int histo_equalizing(BYTE* old_buffer, BYTE* new_buffer, BITMAPINFOHEADER* infoh
 
 	write_hist(TEMP_ARR);
 
-	printf("\n\n\n");
-	for (int brit = 0; brit < MAX_BRIT_VAL; brit++)
-		printf("(%d) %d   ", brit, (int)TEMP_ARR[brit]);
+	//printf("\n\n\n");
+	/*for (int brit = 0; brit < MAX_BRIT_VAL; brit++)
+		printf("(%d) %d   ", brit, (int)TEMP_ARR[brit]);*/
 
 	printf("\n");
 
@@ -106,7 +106,7 @@ void normalize_CDF(BYTE* old_buffer, BITMAPINFOHEADER* infoheader, double* temp_
 	{
 		sum += temp_arr[brit]; // 
 		temp = (int)round(sum * scale_factor); // 정규화 후, 자동반올림
-		printf("(%d) %d, ", brit, temp);
+		//printf("(%d) %d, ", brit, temp);
 		temp_arr[brit] = temp; // 다시 기존의 히스토그램 빈도수로 넣어놓기
 	}
 	// 이제 히스토그램 평활화가 거의 완료되었다.

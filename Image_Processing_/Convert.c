@@ -182,6 +182,12 @@ int mode_select(BYTE** old_buffer, BYTE** new_buffer, BITMAPINFOHEADER* infohead
 	case 12:
 		inverting(*old_buffer, *new_buffer, infoheader, errCode);
 		break;
+	case 13:
+		gamma_correcting(*old_buffer, *new_buffer, infoheader, errCode);
+		break;
+	case 14:
+		parabola_processing(*old_buffer, *new_buffer, infoheader, errCode);
+		break;
 	}
 
 	return *errCode;

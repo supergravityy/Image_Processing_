@@ -66,6 +66,12 @@
     <ClCompile Include="Binarizating.c">
       <Filter>소스 파일</Filter>
     </ClCompile>
+    <ClCompile Include="Parabola_processing.c">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="Gamma_correcting.c">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Processing.h">

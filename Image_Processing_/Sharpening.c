@@ -152,8 +152,13 @@ void normalize_filter(double* kernal, int Sidesize, int coeff)
 	printf("\nFilter coefficient \n\n");
 
 	for (int i = 0; i < Sidesize; i++)
+	{
 		for (int j = 0; j < Sidesize; j++)
 			printf("%lf\t", *(kernal + i * Sidesize + j));
+
+		printf("\n");
+	}
+		
 
 	if (sum == 1)
 		printf("\nThe sum of the kernels is 1!\n\n");

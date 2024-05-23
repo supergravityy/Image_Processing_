@@ -263,7 +263,7 @@ double* gen_LoG(int Sizeside)
 	while (1)
 	{
 		printf("\nIt should be less than 7/6 (=%f), because one side of this kernel is 7!", (float)(7. / 6.));
-		printf("Please enter a sigma value : ");
+		printf("\nPlease enter a sigma value : ");
 
 		scanf("%lf", &sigma);
 
@@ -366,7 +366,7 @@ double* gen_DoG(int Sizeside)
 	double sigma1, sigma2;
 
 	sigma2 = sigma / (2.56 / 1.56 * log(2.56));
-	sigma1 = sigma2 * 1.6; // 두 시그마의 비가 1.6:1 일것
+	sigma1 = sigma2 * 1.6; // 두 시그마의 비가 1.6:1 일것 (연구결과라니 구현은 불가능 할 것 같다)
 
 	double Constant1 = 2 * M_PI * sigma1 * sigma1;
 	double Constant2 = 2 * M_PI * sigma2 * sigma2;

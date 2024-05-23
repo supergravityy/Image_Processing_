@@ -134,6 +134,7 @@
     <ClCompile Include="Edge_Detecting.c" />
     <ClCompile Include="Embossing.c" />
     <ClCompile Include="Equalizing.c" />
+    <ClCompile Include="Gamma_correcting.c" />
     <ClCompile Include="Inverting.c" />
     <ClCompile Include="Magnifying.c" />
     <ClCompile Include="Main.c">
@@ -141,6 +142,7 @@
     </ClCompile>
     <ClCompile Include="Median_filtering.c" />
     <ClCompile Include="Minimizing.c" />
+    <ClCompile Include="Parabola_processing.c" />
     <ClCompile Include="Reuseful.c" />
     <ClCompile Include="Revise.c" />
     <ClCompile Include="Rotating.c" />

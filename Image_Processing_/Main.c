@@ -28,9 +28,14 @@ int main()
 	// 변환할 이미지 파일 이름 입력받기
 	/*-------------------------------------------------*/
 	
+	printf("List of bmp files currently stored in the folder!\n");
+	printf("----------------------------\n");
+	printf("baboon.bmp\nbarbara.bmp\nboats.bmp\nlena.bmp\nmap.bmp\nnoise_city\nrafting.bmp\nvegetable.bmp\n");
+	printf("----------------------------\n");
+
 	do
 	{
-		printf("type vaild BMP name! \n");
+		printf("\ntype vaild BMP name! \n");
 		printf("the file name must end with \".bmp\" \n");
 		printf("typing \'q\' or \'Q\' is Quit!\n");
 
@@ -67,9 +72,11 @@ int main()
 		printf("10. embossing\n");
 		printf("11. binarization\n");
 		printf("12. invert\n");
-		printf("13. bmp2txt\n");
-		printf("14. revising\n");
-		printf("15. Quit\n");
+		printf("13. gamma correcting\n"); 
+		printf("14. parabola processing\n");
+		printf("15. bmp2txt\n");
+		printf("16. revising\n"); 
+		printf("17. Quit\n");
 
 		printf("type the mode you want : ");
 		scanf("%u", &mode);
@@ -100,10 +107,10 @@ int main()
 
 	int result;
 
-	if (mode == 13) //txt 파일로 변환하는 과정은 기존 영상처리와 차이가 많이 나기에, 따로 선언
+	if (mode == 15) //txt 파일로 변환하는 과정은 기존 영상처리와 차이가 많이 나기에, 따로 선언
 		result = convert_TXT(originalName, neoName);
 
-	else if (mode == 14)
+	else if (mode == 16)
 		result = revising(originalName, neoName);
 
 	else
@@ -222,9 +229,15 @@ int addName(char* oldName, char** newName, unsigned int mode)
 		strcpy(additional_Name, "_inverted");
 		break;
 	case 13:
-		strcpy(additional_Name, "_4debug");
+		strcpy(additional_Name, "_gammaCorrected");
 		break;
 	case 14:
+		strcpy(additional_Name, "_parabolaProcessed");
+		break;
+	case 15:
+		strcpy(additional_Name, "_4debug");
+		break;
+	case 16:
 		strcpy(additional_Name, "_revised");
 		break;
 
@@ -268,7 +281,7 @@ int addName(char* oldName, char** newName, unsigned int mode)
 
 	strcat(*newName, additional_Name);
 
-	if (mode != 13)
+	if (mode != 15)
 		strcat(*newName, ".bmp");
 	else
 		strcat(*newName, ".txt");

@@ -105,7 +105,7 @@ int blurring(BYTE* old_buffer, BYTE* new_buffer, BITMAPINFOHEADER* infoheader, i
 		checkSum += kernel[i];
 	}
 
-	if (checkSum == 1)
+	if (!compareDouble(checkSum,1.))
 	{
 		printf("\n\nThe sum of the kernels is 1!\nIt won't affect the overall pixel brightness in any way!\n");
 		printf("Overall, your kernel is valid for blurring kernel!\n\n");
@@ -130,9 +130,8 @@ int blurring(BYTE* old_buffer, BYTE* new_buffer, BITMAPINFOHEADER* infoheader, i
 	// K = Kx * Ky ^ (T) 의 형태로 쪼개지면 분리가능한 커널이다.
 	// 대칭이며, rank = 1 인 행렬이어야 한다. 이를 검사하기 위한 조건
 	{
-		printf("\n\nThe kernel is symmetric about both x and y axes\n");
-		printf("As a result, your kernel is a detachable kernel!\n");
-		printf("When calculating kernels, the time cost is reduced by 33\%! Compared to regular calculation\n\n");
+		printf("\n\nThe kernel is seperatale about both x and y axes\n");
+		printf("When calculating kernels, the time cost is reduced by 33\%%! Compared to regular calculation\n\n");
 
 		// 행과 열로 쪼개서 연산 (어차피 컨볼루션이라 쪼개기가 가능하다)
 
@@ -175,7 +174,7 @@ int blurring(BYTE* old_buffer, BYTE* new_buffer, BITMAPINFOHEADER* infoheader, i
 		{
 			for (int X = 0; X < infoheader->width; X++)
 			{
-				result = row_cal(old_buffer, vector_buffer, X, Y, infoheader, Sizeside);
+				result = col_cal(old_buffer, vector_buffer, X, Y, infoheader, Sizeside);
 				temp_buffer[Y * infoheader->width + X] = (BYTE)result;
 				//printf("%d ", (int)result);
 			}
@@ -196,13 +195,13 @@ int blurring(BYTE* old_buffer, BYTE* new_buffer, BITMAPINFOHEADER* infoheader, i
 			printf("%lf ", vector_buffer[idx]);
 		}
 
-		printf("\nNow col vec calculation is start!\n"); // 그 후에 세로로 행렬계산
+		printf("\nNow col vec calculation is start!\n\n\n"); // 그 후에 세로로 행렬계산
 
 		for (int Y = 0; Y < infoheader->height; Y++)
 		{
 			for (int X = 0; X < infoheader->width; X++)
 			{
-				result = col_cal(temp_buffer, vector_buffer, X, Y, infoheader, Sizeside);
+				result = row_cal(temp_buffer, vector_buffer, X, Y, infoheader, Sizeside);
 				new_buffer[Y * infoheader->width + X] = (BYTE)result;
 				//printf("%d ", (int)result);
 			}
@@ -211,8 +210,8 @@ int blurring(BYTE* old_buffer, BYTE* new_buffer, BITMAPINFOHEADER* infoheader, i
 
 	else // 분리가 불가능하면
 	{
-		printf("\n\nThe kernel is NOT symmetric about both x and y axes\n");
-		printf("As a result, your kernel is NOT a detachable kernel!\n");
+		printf("\n\nThe kernel is NOT seperatable about both x and y axes\n");
+		printf("As a result, Calculate standard convolution!\n");
 
 		flipping(kernel, Sizeside);
 		// 컨볼루션이기에 -기호는 y축과 x축에 대칭일것이다.
@@ -242,7 +241,7 @@ void flipping(double* kernel, int Sizeside)
 	int idx;
 
 	for (idx = 0; idx <= Mid; idx++) // y축과 x축에 대해 flip 연산
-		swap(BYTE, kernel[idx], kernel[(Size - 1) - idx]);
+		swap(double, kernel[idx], kernel[(Size - 1) - idx]);
 
 	return;
 }
@@ -300,7 +299,7 @@ double* gen_GAU_kernel(int size)
 		printf("If you raise the sigma value, the smoothing ability becomes stronger. And if you lower it, the smoothing becomes weaker\n");
 		printf("The condition for entering the value\n");
 		printf("1. Please enter a positive number\n ");
-		printf("2. Because of the 99.7%% law of the normal distribution, the sigma must be less than or equal to \'sideSize(%d)/6\' = %lf : \n",side,Limit_sigma);
+		printf("2. Because of the 99.7%% law of the normal distribution, the sigma must be less than or equal to \'sideSize(%d)/6\' = %lf : ",side,Limit_sigma);
 
 		/*-----------------------------
 		* 여기서 문제가 발생! 먼저 커널 크기를 입력받고, 법칙에 의해 '변의크기 >= 표준편차 * 3 * 2' 이어야 한다
@@ -309,7 +308,7 @@ double* gen_GAU_kernel(int size)
 		* 블러링 연산이 정상적으로 되지않고 이진화가 된것처럼 나온다 -> 이것은 커널과 밀접한 문제이다.
 		-------------------------------*/
 
-		if (scanf("%lf", &sigma) != 1 || (sigma <= 0) /*/ || (sigma > Limit_sigma)*/)
+		if (scanf("%lf", &sigma) != 1 || (sigma <= 0)  || (sigma > Limit_sigma))
 		{
 			printf("Invalid sigma value. Please enter valid number.\n");
 			while (getchar() != '\n'); // fflush(stdin) 으로 안되서 하나하나 비워줘야한다;;;;
@@ -343,10 +342,31 @@ double* gen_GAU_kernel(int size)
 		}
 	}
 
-	for (idx = 0; idx < size; idx++)
-		GAU_kernel[idx] /= sum;
+	/*------------------------------------*/
+	// 6. 총합이 1이되게 정규화
+	/*------------------------------------*/
 
-	printf("Sum of kernel element : %lf\n", sum);
+	printf("Not normarlized sum of kernel : %lf\n", sum);
+
+	/*for (idx = 0; idx < size; idx++)
+		GAU_kernel[idx] /= sum;*/
+	// C에서의 double, float 자료형의 곱셈과 나눗셈은 부동소수점이라서 너무 작은 값과 연산하면
+	// 더더욱 부정확하다는것을 제발 인지하자
+
+	double Diff = 1.0 - sum;
+	sum = 0.0;
+
+	if (Diff != 0)
+	{
+		printf("\nkernel sum is NOT 1\n");
+		for (idx = 0; idx < size; idx++)
+		{
+			GAU_kernel[idx] += Diff / size;
+			sum += GAU_kernel[idx];
+		}
+
+		printf("kernel sum = %lf", sum);
+	}
 
 	// 가우시안 필터 완성!
 
@@ -364,7 +384,8 @@ int check_symmetry(double* kernel, int size)
 	{
 		for (int j = 0; j < side; j++)
 		{
-			if (kernel[i * side + j] != kernel[(side - 1 - i) * side + (side - 1 - j)])
+			if (compareDouble(kernel[i * side + j],kernel[(side-1 - i) * side + (side-1 - j)]))
+				// 부동소수점이기에 오차허용범위를 두고 연산을한다.
 			{
 				Symmetric = 0;
 				break;
@@ -387,7 +408,7 @@ BYTE row_cal(BYTE* old_buffer, double* row_vec, int curX, int curY, BITMAPINFOHE
 	int Radius = Sizeside / 2;
 	int vector_idx, buffer_idx;
 
-	for (int i = curY - Radius; i <= curY + Radius; i++) // i -> 행(y축)
+	for (int i = curY - Radius; i < curY + Radius+1; i++) // i -> 행(y축)
 	{
 		wrapped_i = circular_wrapping(i, Height);
 		buffer_idx = wrapped_i * Width + curX;
@@ -396,9 +417,10 @@ BYTE row_cal(BYTE* old_buffer, double* row_vec, int curX, int curY, BITMAPINFOHE
 		//printf("buffer idx = %d, vector idx = %d\t", buffer_idx, vector_idx);
 	}
 
-	return (BYTE)round(sum);
-}
+	sum = clipping((int)round(sum));
 
+	return (BYTE)sum;
+}
 
 BYTE col_cal(BYTE* temp_buffer, double* col_vec, int curX, int curY, BITMAPINFOHEADER* infoheader, int Sizeside)
 {
@@ -410,7 +432,7 @@ BYTE col_cal(BYTE* temp_buffer, double* col_vec, int curX, int curY, BITMAPINFOH
 	int Radius = Sizeside / 2;
 	int vector_idx, buffer_idx;
 
-	for (int j = curX - Radius; j <= curX + Radius; j++) // j -> 열(x축)
+	for (int j = curX - Radius; j < curX + Radius+1; j++) // j -> 열(x축)
 	{
 		wrapped_j = circular_wrapping(j, Width);
 		buffer_idx = curY * Width + wrapped_j;
@@ -418,8 +440,9 @@ BYTE col_cal(BYTE* temp_buffer, double* col_vec, int curX, int curY, BITMAPINFOH
 		sum += (double)temp_buffer[buffer_idx] * col_vec[vector_idx];
 		//printf("buffer idx = %d, vector idx = %d\t", buffer_idx, vector_idx);
 	}
+	sum = clipping((int)round(sum));
 
-	return (BYTE)round(sum);
+	return (BYTE)sum;
 }
 
 BYTE regular_cal(BYTE* old_buffer, double* kernel, int curX, int curY, BITMAPINFOHEADER* infoheader, int Sizeside)
@@ -433,11 +456,11 @@ BYTE regular_cal(BYTE* old_buffer, double* kernel, int curX, int curY, BITMAPINF
 	int Radius = Sizeside / 2;
 	int kernel_idx;
 
-	for (int i = curY - Radius; i < curY + Radius+1; i++)
+	for (int i = curY - Radius; i<= curY + Radius; i++)
 	{
 		wrapped_i = circular_wrapping(i, Height);
 
-		for (int j = curX - Radius; j < curX + Radius+1; j++)
+		for (int j = curX - Radius; j <= curX + Radius; j++)
 		{
 			wrapped_j = circular_wrapping(j, Width);
 			kernel_idx = (i - curY + Radius) * Sizeside + (j - curX + Radius);
@@ -445,9 +468,9 @@ BYTE regular_cal(BYTE* old_buffer, double* kernel, int curX, int curY, BITMAPINF
 		}
 	}
 
-	int result = (int)round(sum);
+	sum = clipping((int)round(sum));
 
-	return (BYTE)clipping(result); 
+	return (BYTE)sum;
 	/*--------------------------------
 	 순서가 매우 중요하다.
 
@@ -461,8 +484,9 @@ BYTE regular_cal(BYTE* old_buffer, double* kernel, int curX, int curY, BITMAPINF
 }
 
 int is_seperatable(double* kernel, int Sizeside)
+
 {
-	double threshold = 1e-7; // 문턱값 (0.0000001)
+	double threshold = 1e-8; // 문턱값 (0.00000001)
 	int X, Y;
 
 	/*-------------------------------------*/
@@ -478,7 +502,7 @@ int is_seperatable(double* kernel, int Sizeside)
 	int first_RowVec_zero = 0;
 	int first_ColVec_zero = 0;
 
-	for (int X = 1; X < Sizeside; X++)
+	for ( X = 1; X < Sizeside; X++)
 	{
 		if (fabs(kernel[X]) < threshold) // 너무 작은값이면 나눗셈 연산에 영향 
 		{
@@ -487,9 +511,9 @@ int is_seperatable(double* kernel, int Sizeside)
 		}
 	}
 
-	for (int Y = 1; Y < Sizeside; Y++) 
+	for (Y = 1; Y < Sizeside; Y++) 
 	{
-		if (fabs(kernel[Y * Sizeside]) > threshold)
+		if (fabs(kernel[Y * Sizeside]) < threshold)
 		{
 			first_ColVec_zero ++;
 			break;
@@ -515,7 +539,7 @@ int is_seperatable(double* kernel, int Sizeside)
 			// kernel[X]는 첫번째 행의 원소를 의미
 			// 대상 행의 원소들과 첫 행의 원소를 하나씩 빼가며, 차이를 확인
 
-			if (fabs(kernel[Y * Sizeside + X] - row_ratio * kernel[X]) > threshold) 
+			if (fabs(kernel[Y * Sizeside + X] - row_ratio * kernel[X]) > threshold) // 둘의 차이가 크면 안된다
 				return 0;
 	}
 

@@ -7,15 +7,20 @@
 #define ANG2RAD(angle) ((M_PI * (double)(angle)) / 180.0)
 
 #define MAX_BRIT_VAL 255
+#define MAX_DOB_BRIT_VAL 255.0
 #define PXL_BRIT_NUM 256
 #define KERNEL33 9
 #define KERNEL77 49
 
 // 0. 테스트용
 void duplicate(BYTE*, BYTE*, BITMAPINFOHEADER*, int*);
+int compareDouble(double, double);
 
 // 1. 개별화소 처리
 int inverting(BYTE*, BYTE*, BITMAPINFOHEADER*, int*);
+int gamma_correcting(BYTE*, BYTE*, BITMAPINFOHEADER*, int*);
+int parabola_processing(BYTE*, BYTE*, BITMAPINFOHEADER*, int*);
+
 
 // 2. 화소영역 처리
 int blurring(BYTE*, BYTE*, BITMAPINFOHEADER*, int*);
