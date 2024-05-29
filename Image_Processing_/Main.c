@@ -7,13 +7,13 @@
 #include "Convert.h"
 #define STR_LEN 100
 
-// 총 2245줄의 코드
+// 총 3451줄의 코드
 
 /****************************************************
 * 
 *  @ 프로그램 사용법 
 *  
-*	먼저, 해당 파일의 원하는 bmp 파일을 찾아본다.
+*	먼저, 해당 파일의 원하는 bmp 파일을 고른다.
 *	원하는 모드를 입력한다.
 *	처리가 끝나면 파일안에서 출력 bmp 파일을 탐색한다.
 * 
@@ -30,7 +30,8 @@ int main()
 	
 	printf("List of bmp files currently stored in the folder!\n");
 	printf("----------------------------\n");
-	printf("baboon.bmp\nbarbara.bmp\nboats.bmp\nlena.bmp\nmap.bmp\nnoise_city\nrafting.bmp\nvegetable.bmp\n");
+	printf("baboon.bmp\nbarbara.bmp\nboats.bmp\nlena.bmp\nmap.bmp\nnoise_city.bmp\nrafting.bmp\nvegetable.bmp\n");
+	printf("cameraman.bmp\ntoys.bmp\nczp256.bmp\nmuseum.bmp\n");
 	printf("----------------------------\n");
 
 	do

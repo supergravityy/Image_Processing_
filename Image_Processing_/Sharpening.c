@@ -112,8 +112,6 @@ double* gen_HF_kernel()
 		HF_kernel[i] = temp[i];
 	
 
-	// 가장 안정적인 커널이다.
-
 	return HF_kernel;
 }
 
@@ -125,7 +123,7 @@ double* gen_fHFfs_kernel()
 
 	double* fHFfs_kernel = (double*)malloc(sizeof(double) * KERNEL33);
 
-	double temp[KERNEL33] = { -1. / 3.,1. / 3.,-1. / 3.,-1. / 3.,8. / 3.,-1. / 3. ,-1. / 3. ,1. / 3. ,-1. / 3. };
+	double temp[KERNEL33] = { -1. / 3.,1. / 3.,-1. / 3.,-1. / 3.,7. / 3.,-1. / 3. ,-1. / 3. ,1. / 3. ,-1. / 3. };
 
 	for (int i = 0; i < KERNEL33; i++)
 		fHFfs_kernel[i] = temp[i];

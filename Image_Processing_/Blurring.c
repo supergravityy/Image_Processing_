@@ -174,7 +174,7 @@ int blurring(BYTE* old_buffer, BYTE* new_buffer, BITMAPINFOHEADER* infoheader, i
 		{
 			for (int X = 0; X < infoheader->width; X++)
 			{
-				result = col_cal(old_buffer, vector_buffer, X, Y, infoheader, Sizeside);
+				result = row_cal(old_buffer, vector_buffer, X, Y, infoheader, Sizeside);
 				temp_buffer[Y * infoheader->width + X] = (BYTE)result;
 				//printf("%d ", (int)result);
 			}
@@ -201,7 +201,7 @@ int blurring(BYTE* old_buffer, BYTE* new_buffer, BITMAPINFOHEADER* infoheader, i
 		{
 			for (int X = 0; X < infoheader->width; X++)
 			{
-				result = row_cal(temp_buffer, vector_buffer, X, Y, infoheader, Sizeside);
+				result = col_cal(temp_buffer, vector_buffer, X, Y, infoheader, Sizeside);
 				new_buffer[Y * infoheader->width + X] = (BYTE)result;
 				//printf("%d ", (int)result);
 			}
@@ -394,7 +394,6 @@ int check_symmetry(double* kernel, int size)
 		if (!Symmetric)
 			break;
 	}
-
 	return Symmetric;
 }
 

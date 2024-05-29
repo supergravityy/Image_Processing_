@@ -30,7 +30,7 @@ int binarizating(BYTE* old_buffer, BYTE* new_buffer, BITMAPINFOHEADER* infoheade
 	write_hist(histogram);
 
 	printf("\n\n\n");
-	for (int brit = 0; brit < MAX_BRIT_VAL; brit++)
+	for (int brit = 0; brit < PXL_BRIT_NUM; brit++)
 		printf("(%d) %d   ", brit, (int)histogram[brit]);
 
 	/*----------------------------*/
@@ -126,7 +126,7 @@ int Otsu_final(BYTE* old_buffer, BYTE* new_buffer, BYTE threshold, BITMAPINFOHEA
 
 		for (X = 0; X < Width; X++)
 
-			(old_buffer[Y * Width + X] > threshold) ? (new_buffer[Y * Width + X] = 255) : (new_buffer[Y * Width + X] = 0);
+			(old_buffer[Y * Width + X] > threshold) ? (new_buffer[Y * Width + X] = (BYTE)MAX_BRIT_VAL) : (new_buffer[Y * Width + X] = (BYTE)0);
 
 	// 문턱값 아래의 픽셀값은 모두 0, 위의 픽셀은 모두 255 
 

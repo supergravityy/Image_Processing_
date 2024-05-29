@@ -13,7 +13,7 @@ int histo_streching(BYTE* old_buffer, BYTE* new_buffer, BITMAPINFOHEADER* infohe
 	BYTE denominator;
 	BYTE factor[2];
 	STASTICS bmp_Data;
-	double temp_arr[MAX_BRIT_VAL] = { 0 };
+	double temp_arr[MAX_BRIT_VAL+1] = { 0 };
 	find_min_max(old_buffer,infoheader,factor);
 	// 1번째 인덱스는 최소값, 0번째 인덱스는 최소값
 
@@ -59,7 +59,7 @@ int histo_streching(BYTE* old_buffer, BYTE* new_buffer, BITMAPINFOHEADER* infohe
 
 	return 0;
 }
-
+ 
 void find_min_max(BYTE* old_buffer, BITMAPINFOHEADER* infoheader, BYTE* factor)
 {
 	// 0번은 최소, 1번은 최대

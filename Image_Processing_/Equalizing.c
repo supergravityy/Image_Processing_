@@ -9,7 +9,7 @@ int histo_equalizing(BYTE* old_buffer, BYTE* new_buffer, BITMAPINFOHEADER* infoh
 
 	STASTICS bmp_Data; // 통계값을 확인하기위한 구조체 초기화
 
-	double TEMP_ARR[MAX_BRIT_VAL] = { 0 }; 
+	double TEMP_ARR[MAX_BRIT_VAL+1] = { 0 }; 
 	// 히스토그램 연산을 위한 배열 선언, 초기화
 	// 이 배열의 인덱스번호 자체는 0~255까지의 밝기값과 똑같다.
 
@@ -102,7 +102,7 @@ void normalize_CDF(BYTE* old_buffer, BITMAPINFOHEADER* infoheader, double* temp_
 	int temp;
 	double sum = 0;
 
-	for (int brit = 0; brit < MAX_BRIT_VAL; brit++)
+	for (int brit = 0; brit <= MAX_BRIT_VAL; brit++)
 	{
 		sum += temp_arr[brit]; // 
 		temp = (int)round(sum * scale_factor); // 정규화 후, 자동반올림
@@ -127,7 +127,7 @@ void write_hist(double* temp_arr)
 	else
 		printf("\n\n---This is brightness value histogram of modified---\n\n");
 
-	for (int brit = 0; brit < MAX_BRIT_VAL; brit++)
+	for (int brit = 0; brit <= MAX_BRIT_VAL; brit++)
 	{
 		count = (int)temp_arr[brit];
 		if (brit >= 0 && brit < 10)

@@ -19,6 +19,13 @@ int edge_detecting(BYTE* old_buffer, BYTE* new_buffer, BITMAPINFOHEADER* infohea
 		printf("6. Laplacian of Gaussian\n");
 		printf("7. Difference of Gaussian\n");
 
+		// 주의 : 1번,2번,4번,5번은 엣지검출에 필요한 전처리 과정(약간의 블러링 과정)을 포함하지 않기에
+		// 먼저 블러링을 약소하게 (표준편차값을 작게) 걸어주고 작업할것
+
+		// 나머지 커널은 그 자체적으로 블러링 효과를 가진다.
+
+		// 주의2 : 로버츠와 프리윗,소벨
+
 		printf("\nChoose your kernel! : ");
 
 		scanf("%d", &option);
@@ -219,6 +226,8 @@ double* gen_Sobel_kernel()
 
 		return sobel;
 	}
+
+	// 로버츠, 프리윗, 소벨필터는 1방향의 
 }
 
 double* gen_2nd_Laplacian_kernel_1()
@@ -381,7 +390,7 @@ double* gen_DoG(int Sizeside)
 	double sum = 0.;
 	double element;
 	printf("\nThis is DoG kernel elements\n");
-	printf("But it can NOT work as a LoG substitute!\n");
+	printf("But it can NOT work as a LoG substitute perfect!\n");
 
 	for (Y = -Radius; Y <= Radius; Y++)
 	{
