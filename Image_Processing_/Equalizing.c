@@ -28,14 +28,14 @@ int histo_equalizing(BYTE* old_buffer, BYTE* new_buffer, BITMAPINFOHEADER* infoh
 
 	write_hist(TEMP_ARR);
 
-	//printf("\n\n\n");
+
 	/*for (int brit = 0; brit < MAX_BRIT_VAL; brit++)
 		printf("(%d) %d   ", brit, (int)TEMP_ARR[brit]);*/
 
 	/*---------------------------------------*/
 	// 3. 히스토그램의 모든 빈도수를 CDF형태로 만든다
-	// 전체 밝기값으로 나누어서, 전체 이미지에서 특정 밝기값이 나올 확률을 구한다. (정규화 과정)
-	// 그리고, 해당 확률에 전체 밝기값을 곱해서, 다시 밝기값에 관한 정보로 만들어준다.
+	// 이미지 크기로 나누어서, 전체 이미지에서 특정 밝기값이 나올 확률을 구한다. (정규화 과정)
+	// 그리고, 해당 확률에 전체 밝기값을 곱하고, CDF화 시킨다
 	// 마지막으로 이전 버퍼의 각 픽셀의 밝기값을 수정된 배열(처리된 밝기값)에 매핑하여 새 버퍼에 넣는다.
 	/*---------------------------------------*/
 
@@ -43,8 +43,6 @@ int histo_equalizing(BYTE* old_buffer, BYTE* new_buffer, BITMAPINFOHEADER* infoh
 
 	for (unsigned int idx = 0; idx < infoheader->ImageSize; idx++)
 		new_buffer[idx] = (BYTE)TEMP_ARR[old_buffer[idx]];
-	// ★ 본래 버퍼의 픽셀의 밝기값을 기존의 히스토그램에 넣어버리면, 그 안의 밝기값의 정보가 된다
-	// ★ 해당 정보(확률*최대밝기값)를 처리된 밝기값으로 간주하고, 재 매핑하여
 
 	init_ARR(new_buffer, infoheader, TEMP_ARR, &bmp_Data);
 
@@ -55,7 +53,6 @@ int histo_equalizing(BYTE* old_buffer, BYTE* new_buffer, BITMAPINFOHEADER* infoh
 
 	write_hist(TEMP_ARR);
 
-	//printf("\n\n\n");
 	/*for (int brit = 0; brit < MAX_BRIT_VAL; brit++)
 		printf("(%d) %d   ", brit, (int)TEMP_ARR[brit]);*/
 
@@ -104,9 +101,8 @@ void normalize_CDF(BYTE* old_buffer, BITMAPINFOHEADER* infoheader, double* temp_
 
 	for (int brit = 0; brit <= MAX_BRIT_VAL; brit++)
 	{
-		sum += temp_arr[brit]; // 
+		sum += temp_arr[brit];
 		temp = (int)round(sum * scale_factor); // 정규화 후, 자동반올림
-		//printf("(%d) %d, ", brit, temp);
 		temp_arr[brit] = temp; // 다시 기존의 히스토그램 빈도수로 넣어놓기
 	}
 	// 이제 히스토그램 평활화가 거의 완료되었다.

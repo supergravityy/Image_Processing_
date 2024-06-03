@@ -421,27 +421,27 @@ double* gen_DoG(int Sizeside)
 
 	/*--- 그러나 LoG 커널과 DoG 커널의 제로 크로싱만 같고, 크기 스케일은 다르다 ---*/
 
-	// LoG 커널 첫번째 원소를 구해서 DoG 커널 첫번째 원소로 나눈값을 스케일 factor로 설정
+	// LoG 커널 중심 원소를 구해서 DoG 커널 중심 원소로 나눈값을 스케일 factor로 설정
 	// 모든 DoG커널과의 원소에 곱해주기
-	/*
+	
 	printf("\n\nWe need to adjust the matrix scalar to be a substitute!\n");
 
 	double sigma_pow = sigma * sigma;
 	double Constant = 1.0/(2 * M_PI * sigma_pow);
-	X = -Radius; Y = -Radius;
+	X = 0; Y = 0;
 	double Front = (X * X + Y * Y - 2 * sigma_pow) / (sigma_pow * sigma_pow);
 	double Back = exp(-(X * X + Y * Y) / (2 * sigma_pow));
 
-	double first_LoG = Constant * Front * Back;
+	double center_LoG = Constant * Front * Back;
 
-	double scail_factor = first_LoG / DoG_kernel[0];
+	double scail_factor = center_LoG / DoG_kernel[Radius * Sizeside + Radius];
 
-	printf("This is LoG kernel\'s first element : %lf, and scail factor is %lf\n", first_LoG, scail_factor);
+	printf("This is LoG kernel\'s center element : %lf, and scail factor is %lf\n", center_LoG, scail_factor);
 	printf("And This is rescailed DoG kernel elements\n");
 
-	for (X = 0; X < Sizeside; X++)
+	for (Y = 0; Y < Sizeside; Y++)
 	{
-		for (Y = 0; Y < Sizeside; Y++)
+		for (X = 0; X < Sizeside; X++)
 		{
 			DoG_kernel[Y * Sizeside + X] *= scail_factor;
 			sum += DoG_kernel[Y * Sizeside + X];
@@ -457,20 +457,25 @@ double* gen_DoG(int Sizeside)
 	}
 
 	printf("The sum is %lf\n\n\n", sum);
-	*/
-
+	
+	/*---------------------------------------해결완료 무시해도됨------------------------------------*/
 	// 수정 : DoG 커널이 LoG 커널과 맞추기 위해서, 스케일링을 해도 LoG 커널이 될 수 없다.
-	// 오히려 안한게 LoG 커널로 처리한 것과 비슷해진다
+	// 오히려 안한게 LoG 커널로 처리한 것과 비슷해진다 
 
 	/*--- 합이 0이 아니라면, 강제로 0으로 만들어주기 ---*/
 
-	if (fabs(sum) > 1e-10)
+
+	while(fabs(sum) > 1e-10) // 단 한번으로는 완벽하게 0으로 만들수 없다. 부동소수점이라서
 	{
-		printf("Kernel sum is not 0!\nForce it close to zero !\n");
+		printf("Kernel sum is not 0!\nForce it close to zero!\n");
 
 		for (int y = 0; y < Sizeside; y++)
+		{
 			for (int x = 0; x < Sizeside; x++)
+			{
 				DoG_kernel[y * Sizeside + x] -= sum / (double)KERNEL77;
+			}
+		}
 
 		printf("\nAdjusted DoG Kernel:\n");
 		sum = 0;

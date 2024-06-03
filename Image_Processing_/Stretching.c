@@ -11,7 +11,8 @@ int histo_streching(BYTE* old_buffer, BYTE* new_buffer, BITMAPINFOHEADER* infohe
 	/*-------------------------------------*/
 
 	BYTE denominator;
-	BYTE factor[2];
+	BYTE factor[2]={ UCHAR_MAX, 0 };
+
 	STASTICS bmp_Data;
 	double temp_arr[MAX_BRIT_VAL+1] = { 0 };
 	find_min_max(old_buffer,infoheader,factor);
@@ -42,9 +43,13 @@ int histo_streching(BYTE* old_buffer, BYTE* new_buffer, BITMAPINFOHEADER* infohe
 	// 모든 픽셀에 적용하여, 새버퍼에 할당한다
 	/*-------------------------------------*/
 
-	double scale_factor = MAX_BRIT_VAL / denominator;
+	double scale_factor = (double)MAX_BRIT_VAL / denominator;
 	for (unsigned int idx = 0; idx < infoheader->ImageSize; idx++)
-		new_buffer[idx] = (BYTE)round((old_buffer[idx] - factor[0]) * scale_factor);
+	{
+		int new_val = (int)round((old_buffer[idx] - factor[0]) * scale_factor);
+		new_buffer[idx] = clipping(new_val);
+	}
+		
 
 	init_ARR(new_buffer, infoheader, temp_arr, &bmp_Data);
 	write_hist(temp_arr);

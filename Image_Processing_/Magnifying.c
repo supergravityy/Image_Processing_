@@ -69,7 +69,6 @@ int magnifying(BYTE* old_buffer, BYTE** new_buffer, BITMAPINFOHEADER* infoheader
 	double realX, realY;						// 원본버퍼에 적용될 좌표 매핑용 변수들
 	double upLeft, upRight, downLeft, downRight;// 원본버퍼에 적용될 좌표 매핑용 변수들
 	BYTE result;
-
 	int newX, newY;
 	double xDiff, yDiff;
 	int nextX, nextY;

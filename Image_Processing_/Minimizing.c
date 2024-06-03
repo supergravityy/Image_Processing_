@@ -3,7 +3,7 @@
 int minimizing(BYTE* old_buffer, BYTE** new_buffer, BITMAPINFOHEADER* infoheader, BITMAPFILEHEADER* fileheader,int* errCode)
 {
 	/*---------------------------------------------*/
-	// 1. 제일먼저 할것은 얼마의 비율로 축소할 것인지이다. 사용자에게 입력을 받는다 (0~100)
+	// 1. 제일먼저 할것은 얼마의 크기로 축소할 것인지이다. 사용자에게 입력을 받는다 (0~100)
 	/*---------------------------------------------*/
 	
 	int newWidth; int newHeight; int newSize;
@@ -22,15 +22,15 @@ int minimizing(BYTE* old_buffer, BYTE** new_buffer, BITMAPINFOHEADER* infoheader
 	} while (check_size_4m(&newWidth, &newHeight,infoheader));
 	
 	/*---------------------------------------------*/
-	// 2. 그 비율에 맞춰서, 파일의 크기와 파일의 가로세로 너비를 계산한다.
+	// 2. 그 크기에 맞춰서, 파일의 크기와 파일의 가로세로 비율을 계산한다.
 	/*---------------------------------------------*/
 
 	newSize = newWidth * newHeight;
 
 	printf("The new width : %d , The new height : %d, Finally new Imagesize : %d\n", newWidth, newHeight, newSize);
 
-	double width_Ratio = infoheader->width / newWidth;
-	double height_Ratio = infoheader->height / newHeight;
+	double width_Ratio = (double)infoheader->width / (double)newWidth;
+	double height_Ratio = (double)infoheader->height / (double)newHeight;
 
 	printf("The width ratio : %.3f, The height ratio : %.3f\n", width_Ratio, height_Ratio);
 
@@ -94,14 +94,11 @@ int check_size_4m(int* newWidth, int* newHeight, BITMAPINFOHEADER* infoheader)
 
 		if (remain != 0) // 이미지 읽기 최적화를 위해서 너비는 언제나 4의 배수일것!!!
 		{
-			
-
 			if (*newWidth < (infoheader->width) / 2) // 0에 가까울 확률 높음
 			{
 				remain = 4 - remain;
 				*newWidth += remain;
 			}
-
 			else // 이전 너비 크기에 가까울 확률이 높다
 				*newWidth -= remain;
 		}

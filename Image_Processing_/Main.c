@@ -31,7 +31,7 @@ int main()
 	printf("List of bmp files currently stored in the folder!\n");
 	printf("----------------------------\n");
 	printf("baboon.bmp\nbarbara.bmp\nboats.bmp\nlena.bmp\nmap.bmp\nnoise_city.bmp\nrafting.bmp\nvegetable.bmp\n");
-	printf("cameraman.bmp\ntoys.bmp\nczp256.bmp\nmuseum.bmp\n");
+	printf("cameraman.bmp\ntoys.bmp\nczp256.bmp\n");
 	printf("----------------------------\n");
 
 	do

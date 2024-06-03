@@ -104,7 +104,7 @@ inline void draw_bar(int Num)
 	// 10 이하의 나머지는 무시해버린다
 
 	for (int num = 0; num < quotient; num++)
-		printf("▥");
+		printf("■");
 
 	printf("\n");
 }

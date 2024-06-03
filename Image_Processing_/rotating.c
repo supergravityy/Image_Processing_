@@ -157,7 +157,7 @@ int rotate_RAWdata(BYTE* temp_buffer, BYTE* new_buffer, BITMAPINFOHEADER* infohe
 	int newX, newY;
 
 	printf("\nThe center location of Imnage : (X : %d , Y : %d)\n", amidWidth, amidHeight);
-	printf("The cosVal : %f, sinVal : %f", cosVal, sinVal);
+	printf("The cosVal : %lf, sinVal : %lf\n\n", cosVal, sinVal);
 
 	// 이미지의 중심을 기점으로 회전한다는 것을 잊지말자
 
