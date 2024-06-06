@@ -356,7 +356,7 @@ double* gen_GAU_kernel(int size)
 	double Diff = 1.0 - sum;
 	sum = 0.0;
 
-	if (Diff != 0)
+	if (compareDouble(Diff, 0.))
 	{
 		printf("\nkernel sum is NOT 1\n");
 		for (idx = 0; idx < size; idx++)
@@ -522,9 +522,17 @@ int is_seperatable(double* kernel, int Sizeside)
 	if (first_RowVec_zero || first_ColVec_zero) // 하나라도 0있는 벡터면 아웃
 		return 0;
 
+	/*-------------------------------------*/
+	// 조건 2 : rank=1 임을 가정하기에, 첫행과 열이 서로 같아야 한다 (둘중에 하나는 선형종속)
+	/*-------------------------------------*/
+
+	for (int i = 0; i < Sizeside; i++)
+		if (fabs(kernel[i] - kernel[i * Sizeside]) > threshold)
+			return 0;
+
 
 	/*-------------------------------------*/
-	// 조건 2 : 행렬의 rank 값이 1인것으로 가정 (행렬의 선형독립적인 행,열 벡터의 갯수)
+	// 조건 3 : 행렬의 rank 값이 1인것으로 가정 (행렬의 선형독립적인 행,열 벡터의 갯수)
 	// 이는 첫번째를 제외한 모든 행과 열이 첫번째에 선형 종속적이어야 함
 	/*-------------------------------------*/
 

@@ -9,7 +9,7 @@ void duplicate(BYTE* old_buffer, BYTE* new_buffer, BITMAPINFOHEADER* infoheader,
 int compareDouble(double x, double y)
 {
 	double diff = x - y;
-	double threshold = 1.0e-8;
+	double threshold = 1.0e-10;
 	
 	if (fabs(diff) <= threshold)
 		return 0;
