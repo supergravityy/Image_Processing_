@@ -63,12 +63,14 @@ git clone https://github.com/supergravityy/Image_Processing_.git
 
 &nbsp;
 ![스크린샷 2024-06-25 172431](https://github.com/supergravityy/Digital_communication/assets/145382604/e4bfba63-d5aa-47cb-9d8e-4199de8ac0be)
+
 ``` 필터의 크기를 7*7로 선언하였습니다 ```
 &nbsp;
 
 &nbsp;
 ![스크린샷 2024-06-25 172443](https://github.com/supergravityy/Digital_communication/assets/145382604/fb6a8b68-637e-4571-be50-6457d9c1d716)
-``` 표준편차값을 1로 선언하였습니 ```
+
+``` 표준편차값을 1로 선언하였습니다 ```
 &nbsp;
 
 &nbsp;
