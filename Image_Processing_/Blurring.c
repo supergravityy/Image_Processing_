@@ -131,7 +131,7 @@ int blurring(BYTE* old_buffer, BYTE* new_buffer, BITMAPINFOHEADER* infoheader, i
 	// 대칭이며, rank = 1 인 행렬이어야 한다. 이를 검사하기 위한 조건
 	{
 		printf("\n\nThe kernel is seperatale about both x and y axes\n");
-		printf("When calculating kernels, the time cost is reduced by 33\%%! Compared to regular calculation\n\n");
+		printf("When calculating kernels, the time cost is reduced by 33%%! Compared to regular calculation\n\n");
 
 		// 행과 열로 쪼개서 연산 (어차피 컨볼루션이라 쪼개기가 가능하다)
 
